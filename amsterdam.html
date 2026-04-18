@@ -1,779 +1,918 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>🌷 Amsterdam — Option A</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Amsterdam 2025</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#F7F5F2; --surface:#FFFFFF; --border:#E8E3DC; --border-soft:#F0EBE3;
-  --text:#1C1917; --text-2:#78716C; --text-3:#A8A29E;
-  --accent:#2563EB; --accent-soft:#EFF6FF;
-  --hour-h:68px; --radius:10px;
+  --text:#1C1917; --muted:#78716C; --faint:#A8A29E;
+  --blue:#2563EB; --blue-bg:#EFF6FF;
+  --orange:#D97706; --orange-bg:#FFFBEB;
+  --green:#16A34A; --green-bg:#F0FDF4;
+  --purple:#7C3AED; --purple-bg:#F5F3FF;
+  --brown:#B45309; --brown-bg:#FFF7ED;
+  --HH:68px; --R:10px;
   --font:'Plus Jakarta Sans',sans-serif;
-  --c-act:#2563EB; --bg-act:#EFF6FF;
-  --c-trn:#D97706; --bg-trn:#FFFBEB;
-  --c-meal:#16A34A; --bg-meal:#F0FDF4;
-  --c-rest:#7C3AED; --bg-rest:#F5F3FF;
-  --c-opt:#B45309; --bg-opt:#FFF7ED;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent}
-
-/* HEADER */
-.hdr{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;gap:10px}
-.hdr-logo{font-size:20px;line-height:1}
+.hdr{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px}
+.hdr-logo{font-size:22px}
 .hdr-info{flex:1}
-.hdr-title{font-size:15px;font-weight:800;letter-spacing:-.3px;line-height:1}
-.hdr-sub{font-size:10px;color:var(--text-2);margin-top:2px}
-.hdr-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-family:var(--font);font-size:11px;font-weight:600;color:var(--text-2);cursor:pointer}
-
-/* TABS */
-.tabs{display:flex;overflow-x:auto;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:48px;z-index:99;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.hdr-title{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.hdr-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.btn-icon{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:var(--font);color:var(--muted)}
+.tabs{display:flex;overflow-x:auto;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:49px;z-index:99;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;padding:7px 12px 8px;cursor:pointer;border-bottom:2px solid transparent;text-align:center;min-width:68px;transition:border-color .15s,color .15s}
-.tab.active{border-bottom-color:var(--accent);color:var(--accent)}
-.tab-e{font-size:17px;display:block;line-height:1.3}
-.tab-d{font-size:10px;font-weight:700;color:inherit;display:block}
-.tab-n{font-size:9px;color:var(--text-3);display:block}
-
-/* LEGEND */
-.legend{display:flex;flex-wrap:wrap;gap:5px 10px;padding:7px 14px;background:var(--surface);border-bottom:1px solid var(--border-soft)}
-.lg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)}
-.lg-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
-
-/* DAY COLUMN */
-.day-col{display:none}
-.day-col.active{display:block}
-.day-hdr{background:var(--surface);padding:10px 16px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:8px}
-.day-hdr-text h2{font-size:13px;font-weight:700}
-.day-hdr-text p{font-size:10px;color:var(--text-2);margin-top:1px}
-.day-cost{margin-left:auto;background:#F0FDF4;color:#15803D;border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700}
-
-/* GRID */
-.grid-wrap{position:relative;padding-left:42px;background:var(--bg);min-height:calc(var(--hour-h)*16)}
-.hr-line{position:absolute;left:42px;right:0;height:var(--hour-h);border-top:1px solid var(--border-soft)}
-.hr-line:nth-child(even){background:rgba(255,255,255,.55)}
-.hr-label{position:absolute;left:0;width:38px;height:var(--hour-h);display:flex;align-items:flex-start;justify-content:flex-end;padding:5px 6px 0 0;font-size:9px;font-weight:600;color:var(--text-3)}
-
-/* BLOCKS */
-.blk{position:absolute;left:46px;right:6px;border-radius:var(--radius);padding:5px 8px;cursor:pointer;border-left:3px solid;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:transform .12s,box-shadow .12s;z-index:10}
-.blk.dragging{opacity:.3}
-.blk.long-pressing{transform:scale(1.02);box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.tab{flex:0 0 auto;padding:7px 13px 8px;cursor:pointer;border-bottom:2px solid transparent;text-align:center;min-width:66px;transition:all .15s}
+.tab.on{border-bottom-color:var(--blue);color:var(--blue)}
+.tab-e{font-size:16px;display:block;line-height:1.3}
+.tab-d{font-size:10px;font-weight:700;display:block}
+.tab-n{font-size:9px;color:var(--faint);display:block}
+.legend{display:flex;flex-wrap:wrap;gap:5px 10px;padding:7px 14px;background:#fff;border-bottom:1px solid var(--border-soft)}
+.lg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
+.lgd{width:7px;height:7px;border-radius:2px}
+.hint{margin-left:auto;font-size:9px;color:var(--faint)}
+.day{display:none}
+.day.on{display:block}
+.day-hdr{background:#fff;padding:9px 16px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center}
+.day-hdr h2{font-size:13px;font-weight:700;flex:1}
+.cost-pill{background:var(--green-bg);color:var(--green);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700}
+.grid{position:relative;padding-left:42px;min-height:calc(var(--HH)*16)}
+.hl{position:absolute;left:42px;right:0;height:var(--HH);border-top:1px solid var(--border-soft)}
+.hl:nth-child(even){background:rgba(255,255,255,.6)}
+.hlb{position:absolute;left:0;width:38px;height:var(--HH);display:flex;align-items:flex-start;justify-content:flex-end;padding:5px 6px 0;font-size:9px;font-weight:600;color:var(--faint)}
+.drop-line{display:none;position:absolute;left:42px;right:0;height:2px;background:var(--blue);z-index:20;pointer-events:none}
+.drop-line::before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--blue)}
+.drop-label{position:absolute;left:-41px;top:-9px;width:38px;background:var(--blue);color:#fff;border-radius:4px;padding:1px 3px;font-size:9px;font-weight:700;text-align:center}
+.empty-day{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--faint);pointer-events:none}
+.empty-day .ei{font-size:30px}
+.empty-day p{font-size:13px;font-weight:600}
+.empty-day small{font-size:11px}
+.blk{position:absolute;left:46px;right:6px;border-radius:var(--R);padding:5px 8px;cursor:pointer;border-left:3px solid;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,.07);z-index:10}
+.blk.dragging{opacity:.25}
+.blk.pressing{box-shadow:0 4px 16px rgba(0,0,0,.13);transform:scale(1.015)}
 .blk-name{font-size:11px;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.blk-time{font-size:9px;color:var(--text-2);margin-top:2px;font-weight:500}
-.blk-warn{display:inline-flex;align-items:center;gap:2px;margin-top:3px;font-size:8px;font-weight:700;background:rgba(217,119,6,.15);color:#B45309;border-radius:4px;padding:1px 4px}
-.blk-ok{display:inline-flex;align-items:center;gap:2px;margin-top:3px;font-size:8px;font-weight:700;background:rgba(22,163,74,.12);color:#15803D;border-radius:4px;padding:1px 4px}
-.cat-activity{background:var(--bg-act);border-color:var(--c-act)}
-.cat-transport{background:var(--bg-trn);border-color:var(--c-trn)}
-.cat-meal{background:var(--bg-meal);border-color:var(--c-meal)}
-.cat-rest{background:var(--bg-rest);border-color:var(--c-rest)}
-.cat-optional{background:var(--bg-opt);border-color:var(--c-opt)}
-
-/* DRAG GHOST */
-#drag-ghost{display:none;position:fixed;z-index:600;pointer-events:none;border-radius:var(--radius);border-left:3px solid;padding:7px 10px;font-family:var(--font);font-size:11px;font-weight:700;max-width:190px;box-shadow:0 8px 24px rgba(0,0,0,.18);transform:translate(-50%,-110%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* DROP LINE */
-.drop-line{display:none;position:absolute;left:42px;right:0;height:2px;background:var(--accent);z-index:20;pointer-events:none}
-.drop-line::before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.drop-time-label{position:absolute;left:-41px;top:-9px;width:38px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 3px;font-size:9px;font-weight:700;text-align:center}
-
-/* FREE DAY */
-.free-day{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text-3);pointer-events:none}
-.free-day .icon{font-size:32px}
-.free-day p{font-size:13px;font-weight:600}
-.free-day small{font-size:11px}
-
-/* SECTIONS */
-.section{margin:12px;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden}
+.blk-time{font-size:9px;color:var(--muted);margin-top:1px;font-weight:500}
+.blk-badge{display:inline-flex;align-items:center;margin-top:2px;font-size:8px;font-weight:700;border-radius:4px;padding:1px 4px}
+.badge-warn{background:rgba(217,119,6,.14);color:var(--orange)}
+.badge-ok{background:rgba(22,163,74,.13);color:var(--green)}
+.cat-activity{background:var(--blue-bg);border-color:var(--blue)}
+.cat-transport{background:var(--orange-bg);border-color:var(--orange)}
+.cat-meal{background:var(--green-bg);border-color:var(--green)}
+.cat-rest{background:var(--purple-bg);border-color:var(--purple)}
+.cat-optional{background:var(--brown-bg);border-color:var(--brown)}
+#ghost{display:none;position:fixed;z-index:500;pointer-events:none;border-radius:var(--R);border-left:3px solid;padding:6px 10px;font-family:var(--font);font-size:11px;font-weight:700;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 20px rgba(0,0,0,.16);transform:translate(-50%,-110%)}
+.section{margin:12px;background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden}
 .sec-hdr{padding:12px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--border-soft)}
-.sec-hdr h2{font-size:13px;font-weight:700;flex:1}
-.sec-toggle{font-size:11px;color:var(--text-3);transition:transform .2s}
-.sec-toggle.closed{transform:rotate(-90deg)}
+.sec-hdr h3{font-size:13px;font-weight:700;flex:1}
+.sec-arr{font-size:11px;color:var(--faint);transition:transform .2s}
+.sec-arr.shut{transform:rotate(-90deg)}
 .sec-body{padding:12px 14px}
-.sec-body.hidden{display:none}
-
-/* COMPLETED */
-.comp-drop{min-height:50px;border:2px dashed var(--border);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;transition:border-color .15s,background .15s}
-.comp-drop.over{border-color:var(--accent);background:var(--accent-soft)}
-.comp-empty{text-align:center;padding:10px;font-size:11px;color:var(--text-3)}
-.comp-item{background:var(--bg);border-radius:7px;padding:7px 10px;display:flex;align-items:center;gap:8px}
-.comp-name{font-size:11px;color:var(--text-3);text-decoration:line-through;flex:1}
-.comp-restore{font-size:10px;font-weight:700;color:var(--accent);padding:3px 8px;background:var(--accent-soft);border-radius:5px;cursor:pointer;white-space:nowrap;border:none;font-family:var(--font)}
-
-/* NOTES */
+.sec-body.hide{display:none}
+.comp-zone{min-height:52px;border:2px dashed var(--border);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;transition:all .15s}
+.comp-zone.over{border-color:var(--blue);background:var(--blue-bg)}
+.comp-empty{text-align:center;padding:12px;font-size:11px;color:var(--faint)}
+.comp-row{background:var(--bg);border-radius:7px;padding:6px 10px;display:flex;align-items:center;gap:8px}
+.comp-name{font-size:11px;color:var(--faint);text-decoration:line-through;flex:1}
+.comp-btn{font-size:10px;font-weight:700;color:var(--blue);padding:3px 8px;background:var(--blue-bg);border-radius:5px;cursor:pointer;border:none;font-family:var(--font)}
 .notes-ta{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:var(--font);font-size:13px;line-height:1.55;resize:vertical;min-height:100px;background:var(--bg);color:var(--text);outline:none}
-.notes-ta:focus{border-color:var(--accent);background:var(--surface)}
-
-/* FAB */
-.fab{position:fixed;bottom:22px;right:22px;width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.4);z-index:98;display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s}
-.fab:active{transform:scale(.94)}
-
-/* MODAL */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(28,25,23,.6);z-index:200;align-items:flex-end;backdrop-filter:blur(2px)}
+.notes-ta:focus{border-color:var(--blue);background:#fff}
+.fab{position:fixed;bottom:22px;right:22px;width:52px;height:52px;border-radius:50%;background:var(--blue);color:#fff;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.4);z-index:98;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.93)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:flex-end;backdrop-filter:blur(2px)}
 .modal-bg.open{display:flex}
-.modal{background:var(--surface);border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .22s cubic-bezier(.32,.72,0,1)}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-hdr{position:sticky;top:0;background:var(--surface);padding:14px 16px 12px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px;z-index:10}
+.modal{background:#fff;border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto;animation:up .22s cubic-bezier(.32,.72,0,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hdr{position:sticky;top:0;background:#fff;padding:14px 16px 12px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px;z-index:5}
 .modal-hdr h3{font-size:15px;font-weight:800;flex:1;letter-spacing:-.3px}
-.modal-close{width:28px;height:28px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:16px;color:var(--text-2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.modal-body{padding:14px 16px 8px}
-
-.field{margin-bottom:13px}
-.field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-2);margin-bottom:5px}
-.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:var(--font);font-size:14px;color:var(--text);background:var(--surface);outline:none;-webkit-appearance:none;appearance:none}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
-.field textarea{resize:vertical;min-height:72px;line-height:1.5}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-.d-row{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--border-soft)}
-.d-row:last-of-type{border-bottom:none}
-.d-icon{font-size:14px;flex-shrink:0;margin-top:1px}
-.d-text{font-size:13px;line-height:1.55;flex:1;color:#3C3733}
-.d-link{color:var(--accent);text-decoration:none;font-weight:600}
-
-.res-box{background:#FFFBEB;border-radius:9px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;border:1px solid #FDE68A}
-.res-box input[type=checkbox]{width:17px;height:17px;cursor:pointer;flex-shrink:0;accent-color:var(--accent)}
-.res-box label{font-size:13px;font-weight:600;cursor:pointer;flex:1}
-.res-box.done{background:#F0FDF4;border-color:#BBF7D0}
-
-.cat-pill{display:inline-block;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
-
-.btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:7px;transition:opacity .12s}
-.btn:active{opacity:.85}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-success{background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0}
-.btn-danger{background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA}
-.btn-ghost{background:var(--bg);color:var(--text-2);border:1px solid var(--border)}
-
-.check-row{display:flex;align-items:center;gap:9px;margin-bottom:13px}
-.check-row input{width:17px;height:17px;cursor:pointer;accent-color:var(--accent)}
+.modal-x{width:28px;height:28px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:17px;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.modal-body{padding:14px 16px 12px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:var(--font);font-size:14px;color:var(--text);background:#fff;outline:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+.field textarea{resize:vertical;min-height:70px;line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check-row{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.check-row input{width:17px;height:17px;cursor:pointer;accent-color:var(--blue)}
 .check-row label{font-size:13px;cursor:pointer}
+.cat-badge{display:inline-block;border-radius:20px;padding:3px 11px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+.res-row{display:flex;align-items:center;gap:10px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:10px 12px;margin-bottom:11px}
+.res-row.done{background:var(--green-bg);border-color:#BBF7D0}
+.res-row input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--blue)}
+.res-row label{font-size:13px;font-weight:600;cursor:pointer;flex:1}
+.drow{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--border-soft)}
+.drow:last-of-type{border-bottom:none}
+.drow-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.drow-text{font-size:13px;line-height:1.55;color:#3C3733;flex:1;word-break:break-word}
+.drow-link{color:var(--blue);text-decoration:none;font-weight:600}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn:active{opacity:.87}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-green{background:var(--green-bg);color:var(--green);border:1px solid #BBF7D0}
+.btn-red{background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA}
+.btn-grey{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
 </style>
 </head>
 <body>
-
 <div class="hdr">
-  <div class="hdr-logo">🌷</div>
+  <div class="hdr-logo">&#127799;</div>
   <div class="hdr-info">
-    <div class="hdr-title">Amsterdam — Option A</div>
-    <div class="hdr-sub">18–25 Avr · Famille 3 · <span id="total-cost"></span></div>
+    <div class="hdr-title">Amsterdam &mdash; Option A</div>
+    <div class="hdr-sub">18&ndash;25 Avr &middot; Famille 3 &middot; <span id="total-cost"></span></div>
   </div>
-  <div class="hdr-actions">
-    <button class="hdr-btn" onclick="openResetModal()">⚙️</button>
-  </div>
+  <button class="btn-icon" id="btn-settings">&#9881;</button>
 </div>
-
 <div class="tabs" id="tabs"></div>
-
 <div class="legend">
-  <div class="lg"><div class="lg-dot" style="background:var(--c-act)"></div>Activité</div>
-  <div class="lg"><div class="lg-dot" style="background:var(--c-trn)"></div>Transport</div>
-  <div class="lg"><div class="lg-dot" style="background:var(--c-meal)"></div>Repas</div>
-  <div class="lg"><div class="lg-dot" style="background:var(--c-rest)"></div>Repos</div>
-  <div class="lg"><div class="lg-dot" style="background:var(--c-opt)"></div>Optionnel</div>
-  <div class="lg" style="margin-left:auto;font-size:9px;color:var(--text-3)">Appui long = déplacer</div>
+  <div class="lg"><div class="lgd" style="background:var(--blue)"></div>Activit&#233;</div>
+  <div class="lg"><div class="lgd" style="background:var(--orange)"></div>Transport</div>
+  <div class="lg"><div class="lgd" style="background:var(--green)"></div>Repas</div>
+  <div class="lg"><div class="lgd" style="background:var(--purple)"></div>Repos</div>
+  <div class="lg"><div class="lgd" style="background:var(--brown)"></div>Optionnel</div>
+  <div class="hint">Appui long = d&#233;placer</div>
 </div>
-
 <div id="days-wrap"></div>
-
 <div class="section">
-  <div class="sec-hdr" onclick="toggleSec('comp-body','comp-tog')">
-    <h2>✅ Activités terminées</h2>
-    <span class="sec-toggle" id="comp-tog">▼</span>
+  <div class="sec-hdr" id="comp-hdr">
+    <h3>&#10003; Activit&#233;s termin&#233;es</h3>
+    <span class="sec-arr" id="comp-arr">&#9660;</span>
   </div>
   <div class="sec-body" id="comp-body">
-    <div class="comp-drop" id="comp-drop"></div>
+    <div class="comp-zone" id="comp-zone"></div>
   </div>
 </div>
-
 <div class="section" style="margin-bottom:80px">
-  <div class="sec-hdr" onclick="toggleSec('notes-body','notes-tog')">
-    <h2>📝 Notes &amp; Infos pratiques</h2>
-    <span class="sec-toggle" id="notes-tog">▼</span>
+  <div class="sec-hdr" id="notes-hdr">
+    <h3>Notes &amp; Infos pratiques</h3>
+    <span class="sec-arr" id="notes-arr">&#9660;</span>
   </div>
   <div class="sec-body" id="notes-body">
-    <textarea class="notes-ta" id="notes-ta" rows="7" placeholder="Vos notes personnelles...&#10;&#10;💡 Infos utiles :&#10;• Urgences : 112&#10;• Bastion Hotel : Schipluidenlaan 12, Amsterdam&#10;• Carte OV-chipkaart pour les transports&#10;• Google Maps offline recommandé"></textarea>
+    <textarea class="notes-ta" id="notes-ta" rows="7" placeholder="Vos notes personnelles..."></textarea>
   </div>
 </div>
-
-<button class="fab" onclick="openAddModal(null)">+</button>
-<div id="drag-ghost"></div>
+<button class="fab" id="fab">+</button>
+<div id="ghost"></div>
 
 <!-- DETAIL MODAL -->
-<div class="modal-bg" id="d-modal-bg" onclick="if(event.target===this)closeMod('d-modal-bg')">
-  <div class="modal" onclick="event.stopPropagation()">
+
+<div class="modal-bg" id="mod-detail">
+  <div class="modal" id="mod-detail-inner">
     <div class="modal-hdr">
-      <h3 id="d-title">Activité</h3>
-      <button class="modal-close" onclick="closeMod('d-modal-bg')">×</button>
+      <h3 id="det-title">Activit&#233;</h3>
+      <button class="modal-x" id="det-close">&#215;</button>
     </div>
-    <div class="modal-body" id="d-body"></div>
+    <div class="modal-body" id="det-body"></div>
   </div>
 </div>
 
 <!-- ADD/EDIT MODAL -->
-<div class="modal-bg" id="e-modal-bg" onclick="if(event.target===this)closeMod('e-modal-bg')">
-  <div class="modal" onclick="event.stopPropagation()">
+
+<div class="modal-bg" id="mod-edit">
+  <div class="modal" id="mod-edit-inner">
     <div class="modal-hdr">
-      <h3 id="e-modal-title">Nouvelle activité</h3>
-      <button class="modal-close" onclick="closeMod('e-modal-bg')">×</button>
+      <h3 id="edit-title">Nouvelle activit&#233;</h3>
+      <button class="modal-x" id="edit-close">&#215;</button>
     </div>
     <div class="modal-body">
-      <div class="field"><label>Titre</label><input id="f-title" type="text" placeholder="Nom de l'activité"></div>
-      <div class="field field-row">
-        <div><label>Jour</label><select id="f-day"></select></div>
-        <div><label>Catégorie</label>
+      <div class="field"><label>Titre</label><input id="f-name" type="text" placeholder="Nom de l'activit&#233;"></div>
+      <div class="row2">
+        <div class="field"><label>Jour</label><select id="f-day"></select></div>
+        <div class="field"><label>Cat&#233;gorie</label>
           <select id="f-cat">
-            <option value="activity">🔵 Activité</option>
-            <option value="transport">🟠 Transport</option>
-            <option value="meal">🟢 Repas</option>
-            <option value="rest">🟣 Repos</option>
-            <option value="optional">🟡 Optionnel</option>
+            <option value="activity">Activit&#233;</option>
+            <option value="transport">Transport</option>
+            <option value="meal">Repas</option>
+            <option value="rest">Repos</option>
+            <option value="optional">Optionnel</option>
           </select>
         </div>
       </div>
-      <div class="field field-row">
-        <div><label>Heure début</label><input id="f-start" type="time" value="10:00"></div>
-        <div><label>Durée (min)</label><input id="f-dur" type="number" placeholder="60" min="15" step="15"></div>
+      <div class="row2">
+        <div class="field"><label>Heure d&#233;but</label><input id="f-start" type="time" value="10:00"></div>
+        <div class="field"><label>Dur&#233;e (min)</label><input id="f-dur" type="number" placeholder="60" min="15" step="15"></div>
       </div>
-      <div class="field"><label>Notes / Conseils</label><textarea id="f-notes" placeholder="Infos pratiques, prix..."></textarea></div>
+      <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Infos pratiques, prix..."></textarea></div>
       <div class="field"><label>Site web</label><input id="f-web" type="url" placeholder="https://..."></div>
       <div class="field"><label>Adresse</label><input id="f-addr" type="text" placeholder="Adresse ou lieu"></div>
       <div class="field"><label>Lien Google Maps</label><input id="f-map" type="url" placeholder="https://maps.google.com/..."></div>
-      <div class="field"><label>Coût estimé (€)</label><input id="f-cost" type="number" placeholder="0" min="0"></div>
-      <div class="check-row"><input id="f-res" type="checkbox"><label for="f-res">Nécessite une réservation</label></div>
-      <button class="btn btn-primary" onclick="saveAct()">Enregistrer</button>
-      <button class="btn btn-ghost" onclick="closeMod('e-modal-bg')" style="margin-top:8px">Annuler</button>
+      <div class="field"><label>Co&#251;t estim&#233; (&#8364;)</label><input id="f-cost" type="number" placeholder="0" min="0"></div>
+      <div class="check-row"><input id="f-res" type="checkbox"><label for="f-res">N&#233;cessite une r&#233;servation</label></div>
+      <button class="btn btn-blue" id="save-btn">Enregistrer</button>
+      <button class="btn btn-grey" id="edit-cancel" style="margin-top:6px">Annuler</button>
     </div>
   </div>
 </div>
 
 <!-- SETTINGS MODAL -->
-<div class="modal-bg" id="s-modal-bg" onclick="if(event.target===this)closeMod('s-modal-bg')">
-  <div class="modal" onclick="event.stopPropagation()">
+
+<div class="modal-bg" id="mod-settings">
+  <div class="modal">
     <div class="modal-hdr">
-      <h3>⚙️ Paramètres</h3>
-      <button class="modal-close" onclick="closeMod('s-modal-bg')">×</button>
+      <h3>Param&#232;tres</h3>
+      <button class="modal-x" id="settings-close">&#215;</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;line-height:1.5">Toutes les modifications sont sauvegardées automatiquement dans votre navigateur (localStorage).</p>
-      <button class="btn btn-danger" onclick="confirmReset()">🗑 Réinitialiser l'itinéraire</button>
-      <button class="btn btn-ghost" onclick="closeMod('s-modal-bg')" style="margin-top:8px">Fermer</button>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Les modifications sont sauvegard&#233;es automatiquement dans votre navigateur.</p>
+      <button class="btn btn-red" id="reset-btn">R&#233;initialiser l'itin&#233;raire</button>
+      <button class="btn btn-grey" id="settings-cancel" style="margin-top:8px">Fermer</button>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════ CONSTANTS ════════════════
-const SH=7, EH=23, HH=68, SNAP=15;
-const SK='amsterdam_v4';
+(function () {
+"use strict";
 
-const DAYS=[
-  {id:0,date:'18 Avr',dn:'Samedi',   lbl:'Arrivée',                e:'✈️'},
-  {id:1,date:'19 Avr',dn:'Dimanche', lbl:'ARTIS & Vondelpark',     e:'🦁'},
-  {id:2,date:'20 Avr',dn:'Lundi',    lbl:'Keukenhof & Tulipes',    e:'🌷'},
-  {id:3,date:'21 Avr',dn:'Mardi',    lbl:'Canaux & Rijksmuseum',   e:'🎨'},
-  {id:4,date:'22 Avr',dn:'Mercredi', lbl:'Zaanse Schans',          e:'⚙️'},
-  {id:5,date:'23 Avr',dn:'Jeudi',    lbl:'Amsterdam Noord',        e:'🏙️'},
-  {id:6,date:'24 Avr',dn:'Vendredi', lbl:'Journée libre',          e:'⭐'},
-  {id:7,date:'25 Avr',dn:'Samedi',   lbl:'Départ',                 e:'🏠'},
+var SH = 7, EH = 23, HPX = 68, SNAP = 15;
+var KEY = "ams2025v2";
+
+var DAY_DATA = [
+  [0,"18 Avr","Samedi","Arrivee"],
+  [1,"19 Avr","Dimanche","ARTIS et Vondelpark"],
+  [2,"20 Avr","Lundi","Keukenhof et Tulipes"],
+  [3,"21 Avr","Mardi","Canaux et Rijksmuseum"],
+  [4,"22 Avr","Mercredi","Zaanse Schans"],
+  [5,"23 Avr","Jeudi","Amsterdam Noord"],
+  [6,"24 Avr","Vendredi","Journee libre"],
+  [7,"25 Avr","Samedi","Depart"]
+];
+var DAY_EM = ["plane","lion","tulip","art","gear","city","star","home"];
+var DAY_EMOJI_MAP = {plane:"plane",lion:"lion",tulip:"tulip",art:"art",gear:"gear",city:"city",star:"star",home:"home"};
+
+function dayEmoji(em) {
+  var MAP = {plane:"&#9992;&#65039;",lion:"&#129409;",tulip:"&#127799;",art:"&#127912;",gear:"&#9881;&#65039;",city:"&#127961;",star:"&#11088;",home:"&#127968;"};
+  return MAP[em] || em;
+}
+function dayLabel(id) {
+  var MAP = {0:"Arriv&#233;e",1:"ARTIS &amp; Vondelpark",2:"Keukenhof &amp; Tulipes",3:"Canaux &amp; Rijksmuseum",4:"Zaanse Schans",5:"Amsterdam Noord",6:"Journ&#233;e libre",7:"D&#233;part"};
+  return MAP[id] || "";
+}
+
+var CAT_COLOR_MAP = {activity:"var(--blue)",transport:"var(--orange)",meal:"var(--green)",rest:"var(--purple)",optional:"var(--brown)"};
+var CAT_BG_MAP    = {activity:"var(--blue-bg)",transport:"var(--orange-bg)",meal:"var(--green-bg)",rest:"var(--purple-bg)",optional:"var(--brown-bg)"};
+var CAT_NAME_MAP  = {activity:"Activit&#233;",transport:"Transport",meal:"Repas",rest:"Repos",optional:"Optionnel"};
+
+// All activity data — using verbose property names to avoid any reserved word issues
+var ACTS_DEFAULT = [
+  {uid:"a01",dayId:0,startHour:20,startMin:0,duration:90,title:"Atterrissage et Trajet hotel",category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Vol LYS vers AMS. Bus Connexxion ligne 370 depuis Schiphol (30 min, ~7 EUR) ou taxi 35-45 EUR.",
+   website:"https://www.schiphol.nl/en/",address:"Amsterdam Airport Schiphol",mapsUrl:"https://maps.google.com/?q=Amsterdam+Airport+Schiphol"},
+
+  {uid:"a02",dayId:0,startHour:21,startMin:30,duration:60,title:"Diner et Installation",category:"meal",needRes:false,isReserved:false,isDone:false,budget:30,
+   info:"Repas leger apres le voyage. Hotel: Schipluidenlaan 12, Amsterdam.",
+   website:"",address:"Bastion Hotel Amsterdam Zuidwest",mapsUrl:"https://maps.google.com/?q=Bastion+Hotel+Amsterdam+Zuidwest"},
+
+  {uid:"b01",dayId:1,startHour:9,startMin:0,duration:60,title:"Petit-dejeuner",category:"meal",needRes:false,isReserved:false,isDone:false,budget:20,info:"",website:"",address:"",mapsUrl:""},
+
+  {uid:"b02",dayId:1,startHour:10,startMin:0,duration:150,title:"Zoo ARTIS",category:"activity",needRes:true,isReserved:false,isDone:false,budget:54,
+   info:"Zoo historique d'Amsterdam (1838). AQUARIUM inclus dans le billet! Aires de jeux, planetarium. Gratuit moins de 3 ans, 27 EUR/adulte.\nACHETER BILLETS EN LIGNE sur artis.nl",
+   website:"https://www.artis.nl/en/visit/tickets/",address:"Plantage Kerklaan 38-40, 1018 CZ Amsterdam",mapsUrl:"https://maps.google.com/?q=ARTIS+Amsterdam"},
+
+  {uid:"b03",dayId:1,startHour:12,startMin:30,duration:60,title:"Dejeuner - Box Sociaal",category:"meal",needRes:false,isReserved:false,isDone:false,budget:35,
+   info:"Excellent brunch australien. Tres adapte bebes. Note 4.7/5. Reserver le week-end recommande.",
+   website:"https://boxsociaal.nl",address:"Plantage Middenlaan 30A, Amsterdam",mapsUrl:"https://maps.google.com/?q=Box+Sociaal+Amsterdam"},
+
+  {uid:"b04",dayId:1,startHour:13,startMin:30,duration:90,title:"Sieste bebe",category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,info:"Sieste vers 13h. Retour a l'hotel ou sieste dans la poussette.",website:"",address:"",mapsUrl:""},
+
+  {uid:"b05",dayId:1,startHour:15,startMin:0,duration:120,title:"Vondelpark",category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Plus grand parc d'Amsterdam. GRATUIT. Aires de jeux, canards, cafe Groot Melkhuis avec terrasse. 100% adapte poussettes.",
+   website:"",address:"Vondelpark, 1071 AA Amsterdam",mapsUrl:"https://maps.google.com/?q=Vondelpark+Amsterdam"},
+
+  {uid:"b06",dayId:1,startHour:18,startMin:30,duration:90,title:"Diner - Quartier Jordaan",category:"meal",needRes:false,isReserved:false,isDone:false,budget:60,
+   info:"ATTENTION: Restaurant Olijfje FERME LE DIMANCHE.\nAlternatives: De Reiger (brasserie hollandaise), Toscanini (italien, reserver!), Cafe t Smalle (ambiance canal).",
+   website:"",address:"Jordaan, Amsterdam",mapsUrl:"https://maps.google.com/?q=Jordaan+Amsterdam"},
+
+  {uid:"c01",dayId:2,startHour:7,startMin:30,duration:30,title:"Petit-dejeuner rapide",category:"meal",needRes:false,isReserved:false,isDone:false,budget:15,info:"Depart matinal! Petit-dejeuner rapide a l'hotel.",website:"",address:"",mapsUrl:""},
+
+  {uid:"c02",dayId:2,startHour:8,startMin:0,duration:30,title:"Recuperation voiture",category:"transport",needRes:true,isReserved:false,isDone:false,budget:70,
+   info:"RESERVER EN AVANCE sur Rentalcars.com ou AutoEurope.\nInclure siege auto bebe. Recuperer pres de l'hotel ou Amsterdam Zuid station.",
+   website:"https://www.rentalcars.com",address:"Amsterdam Zuidwest / Amsterdam Zuid",mapsUrl:""},
+
+  {uid:"c03",dayId:2,startHour:8,startMin:30,duration:30,title:"Route vers Keukenhof",category:"transport",needRes:false,isReserved:false,isDone:false,budget:7,
+   info:"Environ 30 min de conduite. Parking sur place: 7 EUR/jour. GPS: Stationsweg 166A, Lisse.",
+   website:"",address:"Stationsweg 166A, 2161 AM Lisse",mapsUrl:"https://maps.google.com/?q=Keukenhof+Lisse"},
+
+  {uid:"c04",dayId:2,startHour:9,startMin:0,duration:210,title:"Jardins de Keukenhof",category:"activity",needRes:true,isReserved:false,isDone:false,budget:64,
+   info:"7 MILLIONS de tulipes en fleurs!\nLUNDI = beaucoup moins de monde!\nBILLETS EN LIGNE OBLIGATOIRES sur keukenhof.nl - 32 EUR/adulte, GRATUIT moins de 4 ans.\nAllees adaptees poussettes.",
+   website:"https://keukenhof.nl/en/tickets/",address:"Stationsweg 166A, 2161 AM Lisse",mapsUrl:"https://maps.google.com/?q=Keukenhof+Gardens"},
+
+  {uid:"c05",dayId:2,startHour:12,startMin:30,duration:30,title:"Dejeuner au Keukenhof",category:"meal",needRes:false,isReserved:false,isDone:false,budget:25,
+   info:"Cafes sur place. Alternative: pique-nique prepare a l'avance.",website:"",address:"Keukenhof, Lisse",mapsUrl:""},
+
+  {uid:"c06",dayId:2,startHour:13,startMin:0,duration:120,title:"Sieste + Champs de tulipes",category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Bebe dort dans le siege auto pendant la balade!\nChamps colores entre Noordwijkerhout et Lisse. Arrets photos libres. GRATUIT.",
+   website:"",address:"Region Noordwijkerhout / Lisse",mapsUrl:"https://maps.google.com/?q=Noordwijkerhout+tulip+fields"},
+
+  {uid:"c07",dayId:2,startHour:15,startMin:0,duration:60,title:"Retour et Rendu voiture",category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,info:"Environ 30 min de route vers Amsterdam puis retour de la voiture.",website:"",address:"",mapsUrl:""},
+
+  {uid:"c08",dayId:2,startHour:16,startMin:0,duration:150,title:"Repos a l'hotel",category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,info:"Grande journee! Repos bien merite.",website:"",address:"",mapsUrl:""},
+
+  {uid:"c09",dayId:2,startHour:18,startMin:30,duration:90,title:"Diner - The Pancake Bakery",category:"meal",needRes:false,isReserved:false,isDone:false,budget:45,
+   info:"Crepes hollandaises authentiques depuis 1974. Sous-sol avec murs en briques. Ouvert jusqu'a 21h. Adapte bebe.",
+   website:"https://www.pancake.nl",address:"Prinsengracht 191, 1015 DS Amsterdam",mapsUrl:"https://maps.google.com/?q=Pancake+Bakery+Amsterdam"},
+
+  {uid:"d01",dayId:3,startHour:9,startMin:0,duration:60,title:"Petit-dejeuner",category:"meal",needRes:false,isReserved:false,isDone:false,budget:20,info:"",website:"",address:"",mapsUrl:""},
+
+  {uid:"d02",dayId:3,startHour:10,startMin:0,duration:60,title:"Croisiere sur les canaux",category:"activity",needRes:true,isReserved:false,isDone:false,budget:36,
+   info:"Amsterdam Boat Trips: 4.9/5 sur 5300+ avis. Open bar inclus! Audio en francais. ~18 EUR/adulte.\nTres reposant avec bebe. RESERVER en ligne.",
+   website:"https://www.amsterdamboattrips.com",address:"Oudezijds Voorburgwal 226, 1012 GJ Amsterdam",mapsUrl:"https://maps.google.com/?q=Amsterdam+Boat+Trips"},
+
+  {uid:"d03",dayId:3,startHour:11,startMin:30,duration:60,title:"Rijksmuseum",category:"activity",needRes:true,isReserved:false,isDone:false,budget:45,
+   info:"BILLETS HORODATES OBLIGATOIRES sur rijksmuseum.nl - 22.50 EUR/adulte.\nStrategie bebe: direct a la GALERIE D'HONNEUR (2e etage).\nLa Ronde de Nuit de Rembrandt + La Laitiere de Vermeer. 45-60 min suffit.",
+   website:"https://www.rijksmuseum.nl/en/visit",address:"Museumstraat 1, 1071 XX Amsterdam",mapsUrl:"https://maps.google.com/?q=Rijksmuseum+Amsterdam"},
+
+  {uid:"d04",dayId:3,startHour:12,startMin:30,duration:60,title:"Dejeuner - Pancake Bakery",category:"meal",needRes:false,isReserved:false,isDone:false,budget:35,info:"Si pas visite lundi. Sous-sol en briques, tres authentique.",website:"https://www.pancake.nl",address:"Prinsengracht 191, Amsterdam",mapsUrl:"https://maps.google.com/?q=Pancake+Bakery+Amsterdam"},
+
+  {uid:"d05",dayId:3,startHour:13,startMin:30,duration:90,title:"Sieste a l'hotel",category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,info:"",website:"",address:"",mapsUrl:""},
+
+  {uid:"d06",dayId:3,startHour:15,startMin:30,duration:120,title:"Quartier Jordaan",category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Le quartier le plus charmant d'Amsterdam. Canaux pittoresques, boutiques, galeries. GRATUIT. Adapte poussettes. Incontournable: Brouwersgracht.",
+   website:"",address:"Jordaan, Amsterdam",mapsUrl:"https://maps.google.com/?q=Jordaan+Amsterdam"},
+
+  {uid:"d07",dayId:3,startHour:18,startMin:30,duration:90,title:"Diner - Il Vicolo",category:"meal",needRes:false,isReserved:false,isDone:false,budget:65,
+   info:"MEILLEUR RESTO. 4.8/5 sur 2600+ avis. TRES petit (8-10 tables)!\nPates maison incroyables. Must: tagliatelle pistache-burrata, carbonara.\nY aller a 17h ou appeler avant.",
+   website:"",address:"Taksteeg 3, 1012 PB Amsterdam",mapsUrl:"https://maps.google.com/?q=Il+Vicolo+Amsterdam"},
+
+  {uid:"e01",dayId:4,startHour:9,startMin:0,duration:60,title:"Petit-dejeuner",category:"meal",needRes:false,isReserved:false,isDone:false,budget:20,info:"",website:"",address:"",mapsUrl:""},
+
+  {uid:"e02",dayId:4,startHour:10,startMin:0,duration:30,title:"Train vers Zaanse Schans",category:"transport",needRes:false,isReserved:false,isDone:false,budget:20,
+   info:"Depuis Amsterdam Centraal vers Zaandijk-Zaanse Schans. ~30 min. ~10 EUR aller-retour. Billets sur ns.nl.",
+   website:"https://www.ns.nl/en",address:"Amsterdam Centraal Station",mapsUrl:"https://maps.google.com/?q=Amsterdam+Centraal+Station"},
+
+  {uid:"e03",dayId:4,startHour:10,startMin:30,duration:120,title:"Zaanse Schans - Moulins",category:"activity",needRes:false,isReserved:false,isDone:false,budget:10,
+   info:"Village hollandais historique. Acces village: GRATUIT.\nMoulins fonctionnels, demonstrations de sabots, degustation de fromage. Grand espace exterieur ideal pour bebe!",
+   website:"https://www.dezaanseschans.nl/en/",address:"Schansend 1, 1509 AW Zaandam",mapsUrl:"https://maps.google.com/?q=Zaanse+Schans"},
+
+  {uid:"e04",dayId:4,startHour:12,startMin:30,duration:60,title:"Dejeuner - Zaanse Schans",category:"meal",needRes:false,isReserved:false,isDone:false,budget:30,info:"Cafes sur place. La boulangerie locale est recommandee.",website:"",address:"Zaanse Schans",mapsUrl:""},
+
+  {uid:"e05",dayId:4,startHour:13,startMin:30,duration:90,title:"Sieste dans la poussette",category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,info:"Bebe dort dans la poussette pendant que vous explorez.",website:"",address:"",mapsUrl:""},
+
+  {uid:"e06",dayId:4,startHour:15,startMin:0,duration:30,title:"Train retour Amsterdam",category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,info:"Retour en train vers Amsterdam Centraal.",website:"",address:"",mapsUrl:""},
+
+  {uid:"e07",dayId:4,startHour:15,startMin:45,duration:105,title:"NEMO Science Museum (optionnel)",category:"optional",needRes:false,isReserved:false,isDone:false,budget:40,
+   info:"OPTIONNEL - seulement si vous avez de l'energie!\nMusee des sciences interactif, adapte aux tout-petits. 20 EUR/adulte.\nTerrasse sur le toit GRATUITE avec vue panoramique. Ferme a 17h30.",
+   website:"https://www.nemosciencemuseum.nl/en/",address:"Oosterdok 2, 1011 VX Amsterdam",mapsUrl:"https://maps.google.com/?q=NEMO+Science+Museum+Amsterdam"},
+
+  {uid:"e08",dayId:4,startHour:18,startMin:30,duration:90,title:"Diner - Restaurant Olijfje",category:"meal",needRes:false,isReserved:false,isDone:false,budget:60,
+   info:"Mediterraneen, 4.7/5 sur 4000+ avis. Grand choix de mezze. Service chaleureux.",
+   website:"",address:"Valkenburgerstraat 223D, 1011 MJ Amsterdam",mapsUrl:"https://maps.google.com/?q=Restaurant+Olijfje+Amsterdam"},
+
+  {uid:"f01",dayId:5,startHour:9,startMin:30,duration:90,title:"Grasse matinee et Petit-dejeuner",category:"meal",needRes:false,isReserved:false,isDone:false,budget:20,info:"Journee plus detendue - profitez du matin!",website:"",address:"",mapsUrl:""},
+
+  {uid:"f02",dayId:5,startHour:11,startMin:0,duration:30,title:"Ferry gratuit vers Noord",category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Ferry GRATUIT depuis l'arriere d'Amsterdam Centraal. Traversee 5 min. Bebe adore le bateau! Frequence toutes les 10-15 min.",
+   website:"",address:"Amsterdam Centraal, cote Nord",mapsUrl:"https://maps.google.com/?q=GVB+Ferry+Amsterdam+Noord"},
+
+  {uid:"f03",dayId:5,startHour:11,startMin:30,duration:120,title:"Amsterdam Noord - NDSM",category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Quartier creatif post-industriel. Street art, galeries, restaurants branches. Moins touristique qu'Amsterdam centre.",
+   website:"",address:"NDSM-Plein 28, 1033 SB Amsterdam-Noord",mapsUrl:"https://maps.google.com/?q=NDSM+Amsterdam+Noord"},
+
+  {uid:"f04",dayId:5,startHour:13,startMin:0,duration:60,title:"Dejeuner - Pllek ou Stork",category:"meal",needRes:false,isReserved:false,isDone:false,budget:35,
+   info:"Pllek: restaurant dans des conteneurs recycles, terrasse sur l'eau.\nOu Cafe-Restaurant Stork: specialites de la mer, cadre industriel.",
+   website:"https://www.pllek.nl",address:"TT. Neveritaweg 59, 1033 WB Amsterdam",mapsUrl:"https://maps.google.com/?q=Pllek+Amsterdam"},
+
+  {uid:"f05",dayId:5,startHour:14,startMin:0,duration:90,title:"Sieste a l'hotel",category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,info:"Retour en ferry puis trajet hotel.",website:"",address:"",mapsUrl:""},
+
+  {uid:"f06",dayId:5,startHour:15,startMin:30,duration:120,title:"Barbie Dream Experience (optionnel)",category:"optional",needRes:false,isReserved:false,isDone:false,budget:50,
+   info:"OPTIONNEL. 4.9/5 sur 2900+ avis! 25 EUR/adulte. Experience immersive tres Instagram. Cafe rose a l'interieur. Ouvert jusqu'a 20h.",
+   website:"https://barbiedreamexperience.com",address:"Meeuwenlaan 88-B, 1021 JK Amsterdam",mapsUrl:"https://maps.google.com/?q=Barbie+Dream+Experience+Amsterdam"},
+
+  {uid:"f07",dayId:5,startHour:19,startMin:0,duration:90,title:"Diner libre",category:"meal",needRes:false,isReserved:false,isDone:false,budget:50,
+   info:"Options: Il Vicolo si pas eu de place mardi, Pancakes Amsterdam pres de la gare, ou Foodhallen.",
+   website:"",address:"Amsterdam",mapsUrl:""},
+
+  {uid:"h01",dayId:7,startHour:9,startMin:0,duration:120,title:"Check-out hotel",category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Checkout avant 11h. Consigne bagages a l'hotel ou Amsterdam Centraal.",
+   website:"",address:"Bastion Hotel Amsterdam Zuidwest, Schipluidenlaan 12",mapsUrl:"https://maps.google.com/?q=Bastion+Hotel+Amsterdam+Zuidwest"},
+
+  {uid:"h02",dayId:7,startHour:12,startMin:0,duration:60,title:"Dejeuner - Foodhallen",category:"meal",needRes:false,isReserved:false,isDone:false,budget:35,
+   info:"Marche alimentaire couvert dans d'anciens tramways. Burgers, sushi, pita, fromages... Tres adapte bebe. Dernier repas hollandais!",
+   website:"https://foodhallen.nl/amsterdam",address:"Bellamyplein 51, 1053 AT Amsterdam",mapsUrl:"https://maps.google.com/?q=Foodhallen+Amsterdam"},
+
+  {uid:"h03",dayId:7,startHour:13,startMin:0,duration:240,title:"Derniere balade et Shopping",category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Profitez des dernieres heures! Souvenirs: fromage, stroopwafels, tulipes sechees.\nNegen Straatjes (les 9 rues) - boutiques vintage et locales.",
+   website:"",address:"Negen Straatjes, Amsterdam",mapsUrl:"https://maps.google.com/?q=De+Negen+Straatjes+Amsterdam"},
+
+  {uid:"h04",dayId:7,startHour:17,startMin:30,duration:60,title:"Trajet vers l'aeroport",category:"transport",needRes:false,isReserved:false,isDone:false,budget:12,
+   info:"PREVOIR LARGE avec bebe (2h avant le vol = arriver a 19h15).\nTrain depuis Centraal: ~20 min, ~6 EUR/pers. Ou taxi: ~40-50 EUR.\nVol: 21h15 vers Lyon 22h00.",
+   website:"",address:"Amsterdam Airport Schiphol",mapsUrl:"https://maps.google.com/?q=Amsterdam+Airport+Schiphol"},
+
+  {uid:"h05",dayId:7,startHour:19,startMin:30,duration:105,title:"Embarquement et Vol AMS-LYS",category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Vol 21h15 vers 22h00. Arriver a l'aeroport a 19h30 au plus tard. Bon voyage!",
+   website:"",address:"Amsterdam Airport Schiphol",mapsUrl:""}
 ];
 
-const CAT_LABEL={activity:'Activité',transport:'Transport',meal:'Repas',rest:'Repos',optional:'Optionnel'};
-const CAT_COLOR={activity:'var(--c-act)',transport:'var(--c-trn)',meal:'var(--c-meal)',rest:'var(--c-rest)',optional:'var(--c-opt)'};
-const CAT_BG   ={activity:'var(--bg-act)',transport:'var(--bg-trn)',meal:'var(--bg-meal)',rest:'var(--bg-rest)',optional:'var(--bg-opt)'};
-
-// ═══════════════ DEFAULT DATA ═════════════
-const DEFAULT_ACTS=[
-  // SAM 18 AVR
-  {id:'a01',day:0,s:[20,0],d:90, t:'✈️ Atterrissage & Trajet hôtel',c:'transport',res:false,ok:false,
-   notes:'Vol LYS→AMS. Récupérer les bagages puis rejoindre l\'hôtel.\nOption: bus Connexxion ligne 370 depuis Schiphol (~30 min, ~7€).\nOu taxi: ~35-45€.',
-   web:'https://www.schiphol.nl/en/',addr:'Amsterdam Airport Schiphol',map:'https://maps.google.com/?q=Amsterdam+Airport+Schiphol',cost:0,done:false},
-  {id:'a02',day:0,s:[21,30],d:60,t:'🍽 Dîner & Installation',c:'meal',res:false,ok:false,
-   notes:'Repas léger après le voyage. Restaurants à proximité de l\'hôtel ou room service.\nHôtel: Schipluidenlaan 12, Amsterdam.',
-   web:'',addr:'Bastion Hotel Amsterdam Zuidwest',map:'https://maps.google.com/?q=Bastion+Hotel+Amsterdam+Zuidwest',cost:30,done:false},
-
-  // DIM 19 AVR
-  {id:'b01',day:1,s:[9,0], d:60, t:'☕ Petit-déjeuner',c:'meal',res:false,ok:false,notes:'Petit-déjeuner à l\'hôtel.',web:'',addr:'',map:'',cost:20,done:false},
-  {id:'b02',day:1,s:[10,0],d:150,t:'🦁 Zoo ARTIS',c:'activity',res:true,ok:false,
-   notes:'Zoo historique d\'Amsterdam (1838). AQUARIUM inclus! Aires de jeux, planétarium. Gratuit -3 ans. 27€/adulte.\n⚠️ ACHETER BILLETS EN LIGNE À L\'AVANCE sur artis.nl.',
-   web:'https://www.artis.nl/en/visit/tickets/',addr:'Plantage Kerklaan 38-40, 1018 CZ Amsterdam',map:'https://maps.google.com/?q=ARTIS+Amsterdam',cost:54,done:false},
-  {id:'b03',day:1,s:[12,30],d:60,t:'🍳 Déjeuner – Box Sociaal',c:'meal',res:false,ok:false,
-   notes:'Excellent brunch australien. Très adapté bébés. 4.7/5. Recommandé le week-end de réserver.',
-   web:'https://boxsociaal.nl',addr:'Plantage Middenlaan 30A, 1018 DG Amsterdam',map:'https://maps.google.com/?q=Box+Sociaal+Amsterdam',cost:35,done:false},
-  {id:'b04',day:1,s:[13,30],d:90,t:'😴 Sieste bébé',c:'rest',res:false,ok:false,notes:'Sieste vers 13h. Retour à l\'hôtel ou sieste dans la poussette.',web:'',addr:'',map:'',cost:0,done:false},
-  {id:'b05',day:1,s:[15,0],d:120,t:'🌳 Vondelpark',c:'activity',res:false,ok:false,
-   notes:'Plus grand parc d\'Amsterdam. GRATUIT. Aires de jeux, canards à nourrir, café Groot Melkhuis avec terrasse et aire de jeux. 100% adapté poussettes.',
-   web:'',addr:'Vondelpark, 1071 AA Amsterdam',map:'https://maps.google.com/?q=Vondelpark+Amsterdam',cost:0,done:false},
-  {id:'b06',day:1,s:[18,30],d:90,t:'🍽 Dîner – Quartier Jordaan',c:'meal',res:false,ok:false,
-   notes:'⚠️ Restaurant Olijfje FERMÉ LE DIMANCHE.\nAlternatives dans le Jordaan: De Reiger (brasserie hollandaise), Toscanini (italien, réserver!), ou Café 't Smalle (ambiance canal).',
-   web:'',addr:'Jordaan, Amsterdam',map:'https://maps.google.com/?q=Jordaan+Amsterdam',cost:60,done:false},
-
-  // LUN 20 AVR
-  {id:'c01',day:2,s:[7,30],d:30, t:'☕ Petit-déjeuner rapide',c:'meal',res:false,ok:false,notes:'Départ matinal! Petit-déjeuner rapide à l\'hôtel.',web:'',addr:'',map:'',cost:15,done:false},
-  {id:'c02',day:2,s:[8,0], d:30, t:'🚗 Récupération voiture',c:'transport',res:true,ok:false,
-   notes:'⚠️ RÉSERVER EN AVANCE!\nRentalcars.com ou AutoEurope pour comparer les prix.\nInclure siège auto bébé. Récupérer près de l\'hôtel ou Amsterdam Zuid station.',
-   web:'https://www.rentalcars.com',addr:'Amsterdam Zuidwest / Amsterdam Zuid',map:'',cost:70,done:false},
-  {id:'c03',day:2,s:[8,30],d:30, t:'🚗 Route vers Keukenhof',c:'transport',res:false,ok:false,
-   notes:'~30 min de conduite depuis Amsterdam. Parking sur place: 7€/jour. GPS: Stationsweg 166A, Lisse.',
-   web:'',addr:'Stationsweg 166A, 2161 AM Lisse',map:'https://maps.google.com/?q=Keukenhof+Lisse',cost:7,done:false},
-  {id:'c04',day:2,s:[9,0], d:210,t:'🌷 Jardins de Keukenhof',c:'activity',res:true,ok:false,
-   notes:'7 MILLIONS de tulipes en fleurs! Le plus grand jardin fleuri du monde.\n✅ LUNDI = beaucoup moins de monde qu\'en week-end!\n⚠️ BILLETS EN LIGNE OBLIGATOIRES sur keukenhof.nl\n32€/adulte — GRATUIT -4 ans.\nAllées 100% adaptées poussettes. Cafés sur place.',
-   web:'https://keukenhof.nl/en/tickets/',addr:'Stationsweg 166A, 2161 AM Lisse',map:'https://maps.google.com/?q=Keukenhof+Gardens',cost:64,done:false},
-  {id:'c05',day:2,s:[12,30],d:30, t:'🥗 Déjeuner au Keukenhof',c:'meal',res:false,ok:false,
-   notes:'Cafés sur place (file d\'attente possible). Alternative: pique-nique préparé à l\'avance — il y a de belles tables de pique-nique!',
-   web:'',addr:'Keukenhof, Lisse',map:'',cost:25,done:false},
-  {id:'c06',day:2,s:[13,0],d:120,t:'😴 Sieste + 🌷 Champs de tulipes',c:'activity',res:false,ok:false,
-   notes:'Bébé dort dans le siège auto pendant la balade!\nExplorer les champs colorés entre Noordwijkerhout et Lisse. Arrêts photos libres au bord des routes. GRATUIT.\nItinéraire: Keukenhof → Herenweg → Noordwijkerhout → retour.',
-   web:'',addr:'Région Noordwijkerhout / Lisse',map:'https://maps.google.com/?q=Noordwijkerhout+tulip+fields',cost:0,done:false},
-  {id:'c07',day:2,s:[15,0],d:60, t:'🚗 Retour & Rendu voiture',c:'transport',res:false,ok:false,notes:'~30 min de route vers Amsterdam, puis retour de la voiture au point de prise en charge.',web:'',addr:'',map:'',cost:0,done:false},
-  {id:'c08',day:2,s:[16,0],d:150,t:'😴 Repos à l\'hôtel',c:'rest',res:false,ok:false,notes:'Grande journée! Repos bien mérité.',web:'',addr:'',map:'',cost:0,done:false},
-  {id:'c09',day:2,s:[18,30],d:90,t:'🥞 Dîner – The Pancake Bakery',c:'meal',res:false,ok:false,
-   notes:'Crêpes hollandaises authentiques depuis 1974. Sous-sol avec murs en briques, ambiance très authentique. Ouvert jusqu\'à 21h. Adapté bébé.',
-   web:'https://www.pancake.nl',addr:'Prinsengracht 191, 1015 DS Amsterdam',map:'https://maps.google.com/?q=Pancake+Bakery+Amsterdam',cost:45,done:false},
-
-  // MAR 21 AVR
-  {id:'d01',day:3,s:[9,0], d:60, t:'☕ Petit-déjeuner',c:'meal',res:false,ok:false,notes:'',web:'',addr:'',map:'',cost:20,done:false},
-  {id:'d02',day:3,s:[10,0],d:60, t:'🚢 Croisière sur les canaux',c:'activity',res:true,ok:false,
-   notes:'Amsterdam Boat Trips: 4.9/5 sur 5300+ avis. Open bar inclus! Guide audio en français. ~18€/adulte.\nTrès reposant avec bébé — idéal si il s\'endort!\n⚠️ Réserver en ligne.',
-   web:'https://www.amsterdamboattrips.com',addr:'Oudezijds Voorburgwal 226, 1012 GJ Amsterdam',map:'https://maps.google.com/?q=Amsterdam+Boat+Trips',cost:36,done:false},
-  {id:'d03',day:3,s:[11,30],d:60, t:'🎨 Rijksmuseum',c:'activity',res:true,ok:false,
-   notes:'⚠️ BILLETS HORODATÉS OBLIGATOIRES sur rijksmuseum.nl\n22,50€/adulte.\nStratégie bébé: direct à la GALERIE D\'HONNEUR (2e étage).\n→ La Ronde de Nuit de Rembrandt\n→ La Laitière de Vermeer\n45-60 min suffit. Ascenseur disponible.',
-   web:'https://www.rijksmuseum.nl/en/visit',addr:'Museumstraat 1, 1071 XX Amsterdam',map:'https://maps.google.com/?q=Rijksmuseum+Amsterdam',cost:45,done:false},
-  {id:'d04',day:3,s:[12,30],d:60, t:'🥞 Déjeuner – The Pancake Bakery',c:'meal',res:false,ok:false,
-   notes:'Si pas visité lundi. Sous-sol en briques, très authentique. Alternatives: cafés autour du Vondelpark (5 min à pied).',
-   web:'https://www.pancake.nl',addr:'Prinsengracht 191, 1015 DS Amsterdam',map:'https://maps.google.com/?q=Pancake+Bakery+Amsterdam',cost:35,done:false},
-  {id:'d05',day:3,s:[13,30],d:90, t:'😴 Sieste à l\'hôtel',c:'rest',res:false,ok:false,notes:'',web:'',addr:'',map:'',cost:0,done:false},
-  {id:'d06',day:3,s:[15,30],d:120,t:'🏘️ Quartier Jordaan',c:'activity',res:false,ok:false,
-   notes:'Le quartier le plus charmant d\'Amsterdam. Canaux pittoresques, boutiques, galeries. GRATUIT. Très adapté poussettes.\nIncontournable: Brouwersgracht (le canal le plus photographié).',
-   web:'',addr:'Jordaan, Amsterdam',map:'https://maps.google.com/?q=Jordaan+Amsterdam',cost:0,done:false},
-  {id:'d07',day:3,s:[18,30],d:90, t:'🍝 Dîner – Il Vicolo',c:'meal',res:false,ok:false,
-   notes:'⭐ MEILLEUR RESTAURANT. 4.8/5 sur 2600+ avis. TRÈS petit (8-10 tables seulement)!\nPâtes maison incroyables. Must: tagliatelle pistache-burrata, carbonara.\nY aller à 17h ou appeler avant: pas de réservation en ligne.',
-   web:'',addr:'Taksteeg 3, 1012 PB Amsterdam',map:'https://maps.google.com/?q=Il+Vicolo+Amsterdam',cost:65,done:false},
-
-  // MER 22 AVR
-  {id:'e01',day:4,s:[9,0], d:60, t:'☕ Petit-déjeuner',c:'meal',res:false,ok:false,notes:'',web:'',addr:'',map:'',cost:20,done:false},
-  {id:'e02',day:4,s:[10,0],d:30, t:'🚆 Train → Zaanse Schans',c:'transport',res:false,ok:false,
-   notes:'Depuis Amsterdam Centraal vers Zaandijk-Zaanse Schans. ~30 min. ~10€ A/R par adulte. Billets: NS.nl ou distributeurs à la gare.',
-   web:'https://www.ns.nl/en',addr:'Amsterdam Centraal Station',map:'https://maps.google.com/?q=Amsterdam+Centraal+Station',cost:20,done:false},
-  {id:'e03',day:4,s:[10,30],d:120,t:'⚙️ Zaanse Schans – Moulins',c:'activity',res:false,ok:false,
-   notes:'Village hollandais historique et authentique. Accès au village: GRATUIT.\nMoulins fonctionnels à voir! Démonstrations de sabots en bois, dégustation de fromage. Grand espace extérieur idéal pour bébé.',
-   web:'https://www.dezaanseschans.nl/en/',addr:'Schansend 1, 1509 AW Zaandam',map:'https://maps.google.com/?q=Zaanse+Schans',cost:10,done:false},
-  {id:'e04',day:4,s:[12,30],d:60, t:'🥗 Déjeuner – Zaanse Schans',c:'meal',res:false,ok:false,
-   notes:'Cafés sur place. La boulangerie "De Zaanse Schans Bakery" est recommandée. Ou emporter un pique-nique depuis Amsterdam.',
-   web:'',addr:'Zaanse Schans',map:'',cost:30,done:false},
-  {id:'e05',day:4,s:[13,30],d:90, t:'😴 Sieste dans la poussette',c:'rest',res:false,ok:false,notes:'Bébé dort dans la poussette pendant que vous continuez d\'explorer.',web:'',addr:'',map:'',cost:0,done:false},
-  {id:'e06',day:4,s:[15,0], d:30, t:'🚆 Train retour Amsterdam',c:'transport',res:false,ok:false,notes:'Retour en train vers Amsterdam Centraal.',web:'',addr:'',map:'',cost:0,done:false},
-  {id:'e07',day:4,s:[15,45],d:105,t:'🔬 NEMO Science Museum ⭐',c:'optional',res:false,ok:false,
-   notes:'OPTIONNEL — seulement si vous avez de l\'énergie!\nMusée des sciences interactif, adapté aux tout-petits. 20€/adulte.\nTerrasse sur le toit GRATUITE avec vue panoramique sur Amsterdam. Ouvert jusqu\'à 17h30.',
-   web:'https://www.nemosciencemuseum.nl/en/',addr:'Oosterdok 2, 1011 VX Amsterdam',map:'https://maps.google.com/?q=NEMO+Science+Museum+Amsterdam',cost:40,done:false},
-  {id:'e08',day:4,s:[18,30],d:90, t:'🍽 Dîner – Restaurant Olijfje',c:'meal',res:false,ok:false,
-   notes:'Méditerranéen, 4.7/5 sur 4000+ avis. Grand choix de mezze. Service chaleureux. Prix raisonnable. Recommandé par les locaux.',
-   web:'',addr:'Valkenburgerstraat 223D, 1011 MJ Amsterdam',map:'https://maps.google.com/?q=Restaurant+Olijfje+Amsterdam',cost:60,done:false},
-
-  // JEU 23 AVR
-  {id:'f01',day:5,s:[9,30],d:90, t:'☕ Grasse matinée & Petit-déj',c:'meal',res:false,ok:false,notes:'Journée plus détendue — profitez du matin tranquillement!',web:'',addr:'',map:'',cost:20,done:false},
-  {id:'f02',day:5,s:[11,0],d:30, t:'⛴️ Ferry gratuit vers Noord',c:'transport',res:false,ok:false,
-   notes:'Ferry GRATUIT depuis l\'arrière d\'Amsterdam Centraal. Traversée 5 min. Bébé adore le bateau! Fréquence: toutes les 10-15 min.',
-   web:'',addr:'Amsterdam Centraal, côté Nord (IJ-zijde)',map:'https://maps.google.com/?q=GVB+Ferry+Amsterdam+Noord',cost:0,done:false},
-  {id:'f03',day:5,s:[11,30],d:120,t:'🎨 Amsterdam Noord – NDSM',c:'activity',res:false,ok:false,
-   notes:'Quartier créatif post-industriel. Street art, galeries, restaurants branchés. MOINS touristique qu\'Amsterdam centre. NDSM Wharf = anciens chantiers navals reconvertis en espace culturel.',
-   web:'',addr:'NDSM-Plein 28, 1033 SB Amsterdam-Noord',map:'https://maps.google.com/?q=NDSM+Amsterdam+Noord',cost:0,done:false},
-  {id:'f04',day:5,s:[13,0],d:60, t:'🐟 Déjeuner – Pllek ou Stork',c:'meal',res:false,ok:false,
-   notes:'Pllek: restaurant dans des conteneurs recyclés, terrasse sur l\'eau, très cool.\nOu Café-Restaurant Stork: spécialités de la mer, cadre industriel incroyable.',
-   web:'https://www.pllek.nl',addr:'TT. Neveritaweg 59, 1033 WB Amsterdam',map:'https://maps.google.com/?q=Pllek+Amsterdam',cost:35,done:false},
-  {id:'f05',day:5,s:[14,0],d:90, t:'😴 Sieste à l\'hôtel',c:'rest',res:false,ok:false,notes:'Retour en ferry + trajet hôtel. Sieste de l\'après-midi.',web:'',addr:'',map:'',cost:0,done:false},
-  {id:'f06',day:5,s:[15,30],d:120,t:'💗 Barbie: The Dream Experience',c:'optional',res:false,ok:false,
-   notes:'OPTIONNEL. 4.9/5 sur 2900+ avis! 25€/adulte.\nExpérience immersive et très Instagram dans plusieurs salles thématiques.\nCafé rose à l\'intérieur. Ouvert jusqu\'à 20h. Même pour les adultes, c\'est fun!',
-   web:'https://barbiedreamexperience.com',addr:'Meeuwenlaan 88-B, 1021 JK Amsterdam',map:'https://maps.google.com/?q=Barbie+Dream+Experience+Amsterdam',cost:50,done:false},
-  {id:'f07',day:5,s:[19,0],d:90, t:'🍝 Dîner libre',c:'meal',res:false,ok:false,
-   notes:'Soirée libre! Options:\n• Réessayer Il Vicolo si pas eu de place mardi\n• Pancakes Amsterdam (près de la gare)\n• Foodhallen (marché couvert, beaucoup de choix)',
-   web:'',addr:'Amsterdam',map:'',cost:50,done:false},
-
-  // VEN 24 AVR — Journée libre (pas d'activités pré-remplies)
-
-  // SAM 25 AVR
-  {id:'h01',day:7,s:[9,0], d:120,t:'🏨 Check-out hôtel',c:'transport',res:false,ok:false,
-   notes:'Checkout avant 11h. Déposer les bagages à la consigne de l\'hôtel ou à Amsterdam Centraal (consignes automatiques).',
-   web:'',addr:'Bastion Hotel Amsterdam Zuidwest, Schipluidenlaan 12',map:'https://maps.google.com/?q=Bastion+Hotel+Amsterdam+Zuidwest',cost:0,done:false},
-  {id:'h02',day:7,s:[12,0],d:60, t:'🍔 Déjeuner – Foodhallen',c:'meal',res:false,ok:false,
-   notes:'Marché alimentaire couvert dans d\'anciens tramways. Burgers, sushi, pita, fromages, bières artisanales... Très adapté bébé. Dernier repas hollandais!',
-   web:'https://foodhallen.nl/amsterdam',addr:'Bellamyplein 51, 1053 AT Amsterdam',map:'https://maps.google.com/?q=Foodhallen+Amsterdam',cost:35,done:false},
-  {id:'h03',day:7,s:[13,0],d:240,t:'🚶 Dernière balade / Shopping',c:'activity',res:false,ok:false,
-   notes:'Profitez des dernières heures! Shopping de souvenirs (fromage, stroopwafels, tulipes séchées). Balade Negen Straatjes (les 9 rues — boutiques vintage et locales).',
-   web:'',addr:'Negen Straatjes, Amsterdam',map:'https://maps.google.com/?q=De+Negen+Straatjes+Amsterdam',cost:0,done:false},
-  {id:'h04',day:7,s:[17,30],d:60, t:'✈️ Trajet vers l\'aéroport',c:'transport',res:false,ok:false,
-   notes:'Prévoir LARGE avec bébé (2h avant le vol = 19h15).\nTrain depuis Centraal: ~20 min, ~6€/pers.\nOu taxi: ~40-50€.\nVol: 21h15 → Lyon 22h00.',
-   web:'',addr:'Amsterdam Airport Schiphol',map:'https://maps.google.com/?q=Amsterdam+Airport+Schiphol',cost:12,done:false},
-  {id:'h05',day:7,s:[19,30],d:105,t:'✈️ Embarquement & Vol AMS→LYS',c:'transport',res:false,ok:false,
-   notes:'Vol 21h15 → 22h00. Terminal: vérifier sur votre billet.\nArriver à l\'aéroport à 19h30 au plus tard.\nBon voyage! 🌷',
-   web:'',addr:'Amsterdam Airport Schiphol',map:'',cost:0,done:false},
-];
-
-// ═══════════════ STATE ════════════════════
-function loadState(){
-  try{ const s=localStorage.getItem(SK); if(s) return JSON.parse(s); }catch(e){}
-  return {acts:JSON.parse(JSON.stringify(DEFAULT_ACTS)),notes:''};
+// ── STATE ──────────────────────────────────────────────────────────────
+function loadState() {
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var obj = JSON.parse(raw);
+      if (obj && Array.isArray(obj.acts)) return obj;
+    }
+  } catch(ignored) {}
+  return { acts: cloneActs(), notes: "" };
 }
-function save(){ try{localStorage.setItem(SK,JSON.stringify(st));}catch(e){} updateCosts(); }
-
-let st=loadState(), activeDay=0, editId=null;
-
-// ═══════════════ HELPERS ══════════════════
-const ft=(h,m)=>`${String(h).padStart(2,'0')}h${String(m).padStart(2,'0')}`;
-const et=a=>{ const t=a.s[0]*60+a.s[1]+a.d; return [Math.floor(t/60),t%60]; };
-const topPx=a=>((a.s[0]-SH)+a.s[1]/60)*HH;
-const hPx=a=>Math.max((a.d/60)*HH,22);
-const uid=()=>'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-
-// ═══════════════ INIT ═════════════════════
-function init(){
-  renderTabs(); renderAllDays(); renderCompleted();
-  const ta=document.getElementById('notes-ta');
-  ta.value=st.notes;
-  ta.addEventListener('input',e=>{st.notes=e.target.value;save();});
-  populateDaySel(); setDay(0); updateCosts();
+function cloneActs() { return JSON.parse(JSON.stringify(ACTS_DEFAULT)); }
+function persist() {
+  try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch(ignored) {}
+  refreshTotalCost();
 }
 
-// ═══════════════ TABS ════════════════════
-function renderTabs(){
-  document.getElementById('tabs').innerHTML=DAYS.map(d=>
-    `<div class="tab" id="tab-${d.id}" onclick="setDay(${d.id})">
-      <span class="tab-e">${d.e}</span>
-      <span class="tab-d">${d.date}</span>
-      <span class="tab-n">${d.dn.slice(0,3)}</span>
-    </div>`).join('');
+var ST = loadState();
+var activeDayId = 0;
+var editingUid = null;
+
+// ── HELPERS ────────────────────────────────────────────────────────────
+function p2(n) { return (n < 10 ? "0" : "") + n; }
+function fmt(h, m) { return p2(h) + "h" + p2(m); }
+function calcEnd(act) { var tot = act.startHour * 60 + act.startMin + act.duration; return { h: Math.floor(tot / 60), m: tot % 60 }; }
+function blockTop(act) { return ((act.startHour - SH) + act.startMin / 60) * HPX; }
+function blockH(act)   { return Math.max((act.duration / 60) * HPX, 22); }
+function newUid() { return "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function G(id) { return document.getElementById(id); }
+function esc(str) { return ("" + str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function findAct(uid) { for (var i = 0; i < ST.acts.length; i++) { if (ST.acts[i].uid === uid) return ST.acts[i]; } return null; }
+
+// ── BOOT ───────────────────────────────────────────────────────────────
+function init() {
+  buildTabs();
+  buildDayColumns();
+  refreshAll();
+  G("notes-ta").value = ST.notes || "";
+  G("notes-ta").addEventListener("input", function(ev) { ST.notes = ev.target.value; persist(); });
+  G("fab").addEventListener("click", function() { openAddModal(null); });
+  G("save-btn").addEventListener("click", commitActivity);
+  G("det-close").addEventListener("click", function() { closeModal("mod-detail"); });
+  G("edit-close").addEventListener("click", function() { closeModal("mod-edit"); });
+  G("edit-cancel").addEventListener("click", function() { closeModal("mod-edit"); });
+  G("settings-close").addEventListener("click", function() { closeModal("mod-settings"); });
+  G("settings-cancel").addEventListener("click", function() { closeModal("mod-settings"); });
+  G("reset-btn").addEventListener("click", doReset);
+  G("btn-settings").addEventListener("click", function() { openModal("mod-settings"); });
+  G("comp-hdr").addEventListener("click", function() { toggleSection("comp-body", "comp-arr"); });
+  G("notes-hdr").addEventListener("click", function() { toggleSection("notes-body", "notes-arr"); });
+  G("mod-detail").addEventListener("click", function(ev) { if (ev.target === this) closeModal("mod-detail"); });
+  G("mod-edit").addEventListener("click", function(ev) { if (ev.target === this) closeModal("mod-edit"); });
+  G("mod-settings").addEventListener("click", function(ev) { if (ev.target === this) closeModal("mod-settings"); });
+  populateDaySelect();
+  setDay(0);
+  refreshTotalCost();
 }
 
-// ═══════════════ DAYS ════════════════════
-function renderAllDays(){
-  document.getElementById('days-wrap').innerHTML=DAYS.map(d=>`
-    <div class="day-col" id="day-${d.id}">
-      <div class="day-hdr">
-        <div class="day-hdr-text">
-          <h2>${d.e} ${d.dn} ${d.date} — ${d.lbl}</h2>
-          <p id="dcost-${d.id}"></p>
-        </div>
-      </div>
-      <div class="grid-wrap" id="grid-${d.id}">
-        ${hourLines()}
-        <div class="drop-line" id="dline-${d.id}">
-          <span class="drop-time-label" id="dtime-${d.id}"></span>
-        </div>
-      </div>
-    </div>`).join('');
-  DAYS.forEach(d=>renderBlocks(d.id));
-}
-
-function hourLines(){
-  let h='';
-  for(let i=SH;i<EH;i++){
-    const top=(i-SH)*HH;
-    h+=`<div class="hr-line" style="top:${top}px"></div>`;
-    h+=`<div class="hr-label" style="top:${top}px">${String(i).padStart(2,'0')}h</div>`;
+// ── TABS ───────────────────────────────────────────────────────────────
+function buildTabs() {
+  var html = "";
+  for (var i = 0; i < DAY_DATA.length; i++) {
+    var d = DAY_DATA[i];
+    html += '<div class="tab" id="tab-' + d[0] + '" data-did="' + d[0] + '">' +
+            '<span class="tab-e">' + dayEmoji(DAY_EM[i]) + '</span>' +
+            '<span class="tab-d">' + d[1] + '</span>' +
+            '<span class="tab-n">' + d[2].slice(0,3) + '</span>' +
+            '</div>';
   }
-  return h;
+  G("tabs").innerHTML = html;
+  var tabs = G("tabs").querySelectorAll(".tab");
+  for (var j = 0; j < tabs.length; j++) {
+    (function(tab) {
+      tab.addEventListener("click", function() { setDay(parseInt(tab.dataset.did)); });
+    })(tabs[j]);
+  }
 }
 
-function renderBlocks(dayId){
-  const grid=document.getElementById(`grid-${dayId}`); if(!grid)return;
-  grid.querySelectorAll('.blk,.free-day').forEach(x=>x.remove());
-  const acts=st.acts.filter(a=>a.day===dayId&&!a.done);
-  if(!acts.length){
-    const div=document.createElement('div');
-    div.className='free-day';
-    div.innerHTML=`<span class="icon">${dayId===6?'⭐':'📅'}</span>
-      <p>${dayId===6?'Journée libre — profitez!':'Aucune activité'}</p>
-      <small>Appuyez sur + pour ajouter</small>`;
-    grid.appendChild(div);
+// ── COLUMNS ────────────────────────────────────────────────────────────
+function buildDayColumns() {
+  var html = "";
+  for (var i = 0; i < DAY_DATA.length; i++) {
+    var d = DAY_DATA[i];
+    html += '<div class="day" id="day-' + d[0] + '">' +
+            '<div class="day-hdr"><h2>' + dayEmoji(DAY_EM[i]) + ' ' + d[2] + ' ' + d[1] + ' &mdash; ' + dayLabel(d[0]) + '</h2>' +
+            '<span id="dcost-' + d[0] + '"></span></div>' +
+            '<div class="grid" id="grid-' + d[0] + '">' +
+            buildHours() +
+            '<div class="drop-line" id="dline-' + d[0] + '"><span class="drop-label" id="dlbl-' + d[0] + '"></span></div>' +
+            '</div></div>';
+  }
+  G("days-wrap").innerHTML = html;
+}
+
+function buildHours() {
+  var html = "";
+  for (var h = SH; h < EH; h++) {
+    var top = (h - SH) * HPX;
+    html += '<div class="hl" style="top:' + top + 'px"></div>';
+    html += '<div class="hlb" style="top:' + top + 'px">' + p2(h) + 'h</div>';
+  }
+  return html;
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function refreshAll() {
+  for (var i = 0; i < DAY_DATA.length; i++) refreshDay(DAY_DATA[i][0]);
+  refreshCompleted();
+}
+
+function refreshDay(dayId) {
+  var grid = G("grid-" + dayId);
+  if (!grid) return;
+  var old = grid.querySelectorAll(".blk, .empty-day");
+  for (var k = 0; k < old.length; k++) old[k].parentNode.removeChild(old[k]);
+
+  var acts = [];
+  for (var i = 0; i < ST.acts.length; i++) {
+    if (ST.acts[i].dayId === dayId && !ST.acts[i].isDone) acts.push(ST.acts[i]);
+  }
+
+  if (acts.length === 0) {
+    var emp = document.createElement("div");
+    emp.className = "empty-day";
+    emp.innerHTML = (dayId === 6 ? '<span class="ei">&#11088;</span><p>Journ&#233;e libre!</p>' :
+                                   '<span class="ei">&#128197;</span><p>Aucune activit&#233;</p>') +
+                    '<small>Appuyez sur + pour ajouter</small>';
+    grid.appendChild(emp);
   } else {
-    acts.forEach(a=>grid.appendChild(makeBlock(a)));
+    for (var j = 0; j < acts.length; j++) grid.appendChild(makeBlock(acts[j]));
   }
-  const cost=acts.reduce((s,a)=>s+(a.cost||0),0);
-  const el=document.getElementById(`dcost-${dayId}`);
-  if(el) el.innerHTML=cost>0?`<span class="day-cost">💰 ~${cost}€</span>`:'';
+
+  var total = 0;
+  for (var m = 0; m < acts.length; m++) total += (acts[m].budget || 0);
+  var cpEl = G("dcost-" + dayId);
+  if (cpEl) cpEl.innerHTML = total > 0 ? '<span class="cost-pill">~' + total + '&#8364;</span>' : "";
 }
 
-function makeBlock(a){
-  const div=document.createElement('div');
-  div.className=`blk cat-${a.c}`;
-  div.id=`blk-${a.id}`;
-  div.dataset.id=a.id;
-  const top=topPx(a),h=hPx(a);
-  div.style.cssText=`top:${top}px;height:${h}px`;
-  const e=et(a);
-  const showTime=h>30;
-  let badge='';
-  if(h>36&&a.res) badge=a.ok
-    ?`<div class="blk-ok">✓ Réservé</div>`
-    :`<div class="blk-warn">⚠ À réserver</div>`;
-  div.innerHTML=`<div class="blk-name">${a.t}</div>
-    ${showTime?`<div class="blk-time">${ft(...a.s)} – ${ft(...e)}</div>`:''}
-    ${badge}`;
+function makeBlock(act) {
+  var div = document.createElement("div");
+  div.className = "blk cat-" + act.category;
+  div.id = "blk-" + act.uid;
+  div.setAttribute("data-uid", act.uid);
+  div.style.top    = blockTop(act) + "px";
+  div.style.height = blockH(act)   + "px";
 
-  let pressTimer=null,pressStartX=0,pressStartY=0;
+  var en = calcEnd(act);
+  var hp = blockH(act);
+  var showTime = hp > 30;
+  var badge = "";
+  if (hp > 36 && act.needRes) {
+    badge = act.isReserved
+      ? '<div class="blk-badge badge-ok">R&#233;serv&#233;</div>'
+      : '<div class="blk-badge badge-warn">&#8203;A r&#233;server</div>';
+  }
+  div.innerHTML = '<div class="blk-name">' + esc(act.title) + '</div>' +
+    (showTime ? '<div class="blk-time">' + fmt(act.startHour, act.startMin) + ' &ndash; ' + fmt(en.h, en.m) + '</div>' : '') +
+    badge;
 
-  div.addEventListener('pointerdown',ev=>{
-    if(ev.target.tagName==='INPUT')return;
-    ev.preventDefault();
-    pressStartX=ev.clientX; pressStartY=ev.clientY;
-    div.classList.add('long-pressing');
-    pressTimer=setTimeout(()=>{pressTimer=null;startDrag(ev,a.id);},320);
-    const pMove=ev2=>{
-      const dx=Math.abs(ev2.clientX-pressStartX),dy=Math.abs(ev2.clientY-pressStartY);
-      if((dx>9||dy>9)&&pressTimer){
-        clearTimeout(pressTimer);pressTimer=null;
-        document.removeEventListener('pointermove',pMove);
-        startDrag(ev2,a.id);
-      }
-    };
-    const pUp=()=>{
-      div.classList.remove('long-pressing');
-      document.removeEventListener('pointermove',pMove);
-      if(pressTimer){clearTimeout(pressTimer);pressTimer=null;openDetail(a.id);}
-    };
-    document.addEventListener('pointermove',pMove,{passive:false});
-    document.addEventListener('pointerup',pUp,{once:true});
-  });
+  wireBlock(div, act.uid);
   return div;
 }
 
-// ═══════════════ DRAG ════════════════════
-let drag=null;
+// ── BLOCK INTERACTION ──────────────────────────────────────────────────
+function wireBlock(div, uid) {
+  var timer = null;
+  var ox = 0, oy = 0;
 
-function startDrag(ev,actId){
-  const a=st.acts.find(x=>x.id===actId); if(!a)return;
-  const blk=document.getElementById(`blk-${actId}`);
-  blk.classList.add('dragging');
-  const g=document.getElementById('drag-ghost');
-  g.style.cssText=`display:block;background:${CAT_BG[a.c]};border-color:${CAT_COLOR[a.c]};left:${ev.clientX}px;top:${ev.clientY}px`;
-  g.textContent=a.t;
-  drag={actId,blk,dropH:null,dropM:null};
-  document.addEventListener('pointermove',onMove,{passive:false});
-  document.addEventListener('pointerup',onUp,{once:true});
+  div.addEventListener("pointerdown", function onDown(ev) {
+    if (ev.target.tagName === "INPUT") return;
+    ev.preventDefault();
+    ox = ev.clientX; oy = ev.clientY;
+    div.classList.add("pressing");
+
+    timer = setTimeout(function() {
+      timer = null;
+      div.classList.remove("pressing");
+      beginDrag(ev, uid);
+    }, 350);
+
+    function onMove(ev2) {
+      if (!timer) return;
+      if (Math.abs(ev2.clientX - ox) > 10 || Math.abs(ev2.clientY - oy) > 10) {
+        clearTimeout(timer); timer = null;
+        div.classList.remove("pressing");
+        document.removeEventListener("pointermove", onMove);
+        beginDrag(ev2, uid);
+      }
+    }
+    function onUp() {
+      div.classList.remove("pressing");
+      document.removeEventListener("pointermove", onMove);
+      if (timer) { clearTimeout(timer); timer = null; showDetail(uid); }
+    }
+    document.addEventListener("pointermove", onMove, { passive: false });
+    document.addEventListener("pointerup", onUp, { once: true });
+  });
 }
 
-function onMove(ev){
-  if(!drag)return; ev.preventDefault();
-  const g=document.getElementById('drag-ghost');
-  g.style.left=ev.clientX+'px'; g.style.top=ev.clientY+'px';
-  const compEl=document.getElementById('comp-drop');
-  const cr=compEl.getBoundingClientRect();
-  if(ev.clientY>=cr.top&&ev.clientY<=cr.bottom&&ev.clientX>=cr.left&&ev.clientX<=cr.right){
-    compEl.classList.add('over'); hideLine(); drag.dropH=null; return;
+// ── DRAG ───────────────────────────────────────────────────────────────
+var DRG = null;
+
+function beginDrag(ev, uid) {
+  var act = findAct(uid); if (!act) return;
+  var blkEl = G("blk-" + uid); if (!blkEl) return;
+  blkEl.classList.add("dragging");
+
+  var ghost = G("ghost");
+  ghost.style.display       = "block";
+  ghost.style.background    = CAT_BG_MAP[act.category] || "#eee";
+  ghost.style.borderColor   = CAT_COLOR_MAP[act.category] || "#999";
+  ghost.style.left          = ev.clientX + "px";
+  ghost.style.top           = ev.clientY + "px";
+  ghost.textContent         = act.title;
+
+  DRG = { uid: uid, blkEl: blkEl, dropH: null, dropM: null };
+  document.addEventListener("pointermove", onDragMove, { passive: false });
+  document.addEventListener("pointerup",   onDragUp,   { once: true });
+}
+
+function onDragMove(ev) {
+  if (!DRG) return;
+  ev.preventDefault();
+  G("ghost").style.left = ev.clientX + "px";
+  G("ghost").style.top  = ev.clientY + "px";
+
+  var zone = G("comp-zone");
+  var zr = zone.getBoundingClientRect();
+  var inZone = ev.clientY >= zr.top && ev.clientY <= zr.bottom && ev.clientX >= zr.left && ev.clientX <= zr.right;
+  zone.classList.toggle("over", inZone);
+  if (inZone) { hideDropLine(); DRG.dropH = null; return; }
+
+  var grid = G("grid-" + activeDayId);
+  if (!grid) { hideDropLine(); return; }
+  var gr = grid.getBoundingClientRect();
+  var gy = ev.clientY - gr.top;
+  if (gy >= 0 && gy <= gr.height) {
+    var totalMin = (gy / HPX) * 60;
+    var h = Math.floor(totalMin / 60) + SH;
+    var m = Math.round((totalMin % 60) / SNAP) * SNAP;
+    if (m >= 60) { h++; m = 0; }
+    h = Math.max(SH, Math.min(EH - 1, h));
+    showDropLine(activeDayId, h, m);
+    DRG.dropH = h; DRG.dropM = m;
+  } else { hideDropLine(); DRG.dropH = null; }
+}
+
+function onDragUp(ev) {
+  if (!DRG) return;
+  G("ghost").style.display = "none";
+  DRG.blkEl.classList.remove("dragging");
+  G("comp-zone").classList.remove("over");
+  hideDropLine();
+
+  var zone = G("comp-zone");
+  var zr = zone.getBoundingClientRect();
+  if (ev.clientY >= zr.top && ev.clientY <= zr.bottom) {
+    setDone(DRG.uid);
+  } else if (DRG.dropH !== null) {
+    var act = findAct(DRG.uid);
+    if (act) { act.startHour = DRG.dropH; act.startMin = DRG.dropM; persist(); refreshDay(act.dayId); }
   }
-  compEl.classList.remove('over');
-  const grid=document.getElementById(`grid-${activeDay}`); if(!grid)return;
-  const gr=grid.getBoundingClientRect();
-  const gy=ev.clientY-gr.top;
-  if(gy>=0&&gy<=gr.height){
-    const totalMin=(gy/HH)*60;
-    let h=Math.floor(totalMin/60)+SH;
-    let m=Math.round((totalMin%60)/SNAP)*SNAP;
-    if(m>=60){h++;m=0;} h=Math.max(SH,Math.min(EH-1,h));
-    showLine(activeDay,h,m); drag.dropH=h; drag.dropM=m;
-  } else { hideLine(); drag.dropH=null; }
+  document.removeEventListener("pointermove", onDragMove);
+  DRG = null;
 }
 
-function onUp(ev){
-  if(!drag)return;
-  const{actId,blk,dropH,dropM}=drag;
-  document.getElementById('drag-ghost').style.display='none';
-  blk.classList.remove('dragging');
-  document.getElementById('comp-drop').classList.remove('over');
-  hideLine();
-  const cr=document.getElementById('comp-drop').getBoundingClientRect();
-  if(ev.clientY>=cr.top&&ev.clientY<=cr.bottom) markDone(actId);
-  else if(dropH!==null){
-    const a=st.acts.find(x=>x.id===actId);
-    if(a){a.s=[dropH,dropM];save();renderBlocks(a.day);}
-  }
-  document.removeEventListener('pointermove',onMove);
-  drag=null;
+function showDropLine(dayId, h, m) {
+  var ln = G("dline-" + dayId); var lb = G("dlbl-" + dayId);
+  if (!ln) return;
+  ln.style.top = ((h - SH) + m / 60) * HPX + "px";
+  ln.style.display = "block";
+  if (lb) lb.textContent = fmt(h, m);
 }
-
-function showLine(dayId,h,m){
-  const l=document.getElementById(`dline-${dayId}`);
-  const t=document.getElementById(`dtime-${dayId}`);
-  if(!l)return;
-  l.style.cssText=`top:${((h-SH)+m/60)*HH}px;display:block`;
-  if(t)t.textContent=ft(h,m);
-}
-function hideLine(){ DAYS.forEach(d=>{const l=document.getElementById(`dline-${d.id}`);if(l)l.style.display='none';}); }
-
-// ═══════════════ COMPLETED ═══════════════
-function markDone(id){
-  const a=st.acts.find(x=>x.id===id);if(!a)return;
-  a.done=true;save();renderBlocks(a.day);renderCompleted();
-}
-function restoreAct(id){
-  const a=st.acts.find(x=>x.id===id);if(!a)return;
-  a.done=false;save();renderBlocks(a.day);renderCompleted();
-}
-function renderCompleted(){
-  const c=document.getElementById('comp-drop');
-  const done=st.acts.filter(a=>a.done);
-  if(!done.length){
-    c.innerHTML=`<div class="comp-empty">Glissez les activités terminées ici ↑</div>`;
-  } else {
-    c.innerHTML=done.map(a=>`
-      <div class="comp-item">
-        <span class="comp-name">${DAYS[a.day].e} ${a.t}</span>
-        <button class="comp-restore" onclick="restoreAct('${a.id}')">↩ Restaurer</button>
-      </div>`).join('');
+function hideDropLine() {
+  for (var i = 0; i < DAY_DATA.length; i++) {
+    var ln = G("dline-" + DAY_DATA[i][0]);
+    if (ln) ln.style.display = "none";
   }
 }
 
-// ═══════════════ DETAIL MODAL ════════════
-function openDetail(id){
-  const a=st.acts.find(x=>x.id===id);if(!a)return;
-  document.getElementById('d-title').textContent=a.t;
-  const e=et(a);
-  let html=`<span class="cat-pill" style="background:${CAT_BG[a.c]};color:${CAT_COLOR[a.c]}">${CAT_LABEL[a.c]}</span>`;
-  if(a.res){
-    html+=`<div class="res-box ${a.ok?'done':''}">
-      <input type="checkbox" id="rb-${id}" ${a.ok?'checked':''} onchange="toggleOk('${id}',this.checked)">
-      <label for="rb-${id}">${a.ok?'✅ Réservé!':'⚠️ À réserver — important!'}</label>
-    </div>`;
+// ── COMPLETED ──────────────────────────────────────────────────────────
+function setDone(uid) {
+  var act = findAct(uid); if (!act) return;
+  act.isDone = true; persist(); refreshDay(act.dayId); refreshCompleted();
+}
+function restoreAct(uid) {
+  var act = findAct(uid); if (!act) return;
+  act.isDone = false; persist(); refreshDay(act.dayId); refreshCompleted();
+}
+function refreshCompleted() {
+  var zone = G("comp-zone");
+  var done = ST.acts.filter(function(a) { return a.isDone; });
+  if (done.length === 0) {
+    zone.innerHTML = '<div class="comp-empty">Glissez les activit&#233;s termin&#233;es ici &#8593;</div>';
+    return;
   }
-  html+=`<div class="d-row"><span class="d-icon">🕐</span>
-    <span class="d-text"><strong>${ft(...a.s)} – ${ft(...e)}</strong> &nbsp;·&nbsp; ${a.d} min</span></div>`;
-  if(a.cost>0) html+=`<div class="d-row"><span class="d-icon">💰</span><span class="d-text">~${a.cost}€ estimé</span></div>`;
-  if(a.notes)  html+=`<div class="d-row"><span class="d-icon">📝</span><span class="d-text">${a.notes.replace(/\n/g,'<br>')}</span></div>`;
-  if(a.web)    html+=`<div class="d-row"><span class="d-icon">🌐</span><a class="d-text d-link" href="${a.web}" target="_blank">${a.web.replace(/https?:\/\//,'').split('/')[0]} ↗</a></div>`;
-  if(a.addr)   html+=`<div class="d-row"><span class="d-icon">📍</span><span class="d-text">${a.addr}${a.map?`<br><a class="d-link" href="${a.map}" target="_blank">Voir sur Maps ↗</a>`:''}</span></div>`;
-  html+=`
-    <button class="btn btn-primary" style="margin-top:14px" onclick="openEdit('${id}')">✏️ Modifier</button>
-    <button class="btn btn-success" onclick="markDone('${id}');closeMod('d-modal-bg')">✅ Marquer comme terminée</button>
-    <button class="btn btn-danger" onclick="delAct('${id}')">🗑 Supprimer</button>`;
-  document.getElementById('d-body').innerHTML=html;
-  document.getElementById('d-modal-bg').classList.add('open');
+  var html = "";
+  for (var i = 0; i < done.length; i++) {
+    var em = dayEmoji(DAY_EM[done[i].dayId] || "star");
+    html += '<div class="comp-row">' +
+            '<span class="comp-name">' + em + ' ' + esc(done[i].title) + '</span>' +
+            '<button class="comp-btn" data-ruid="' + done[i].uid + '">Restaurer</button>' +
+            '</div>';
+  }
+  zone.innerHTML = html;
+  var btns = zone.querySelectorAll(".comp-btn");
+  for (var j = 0; j < btns.length; j++) {
+    (function(btn) {
+      btn.addEventListener("click", function() { restoreAct(btn.dataset.ruid); });
+    })(btns[j]);
+  }
 }
 
-function toggleOk(id,checked){
-  const a=st.acts.find(x=>x.id===id);if(!a)return;
-  a.ok=checked;save();renderBlocks(a.day);
-  const box=document.getElementById('rb-'+id)?.closest('.res-box');
-  if(box){box.classList.toggle('done',checked);box.querySelector('label').textContent=checked?'✅ Réservé!':'⚠️ À réserver — important!';}
+// ── DETAIL ─────────────────────────────────────────────────────────────
+function showDetail(uid) {
+  var act = findAct(uid); if (!act) return;
+  G("det-title").textContent = act.title;
+  var en = calcEnd(act);
+  var html = '<span class="cat-badge" style="background:' + CAT_BG_MAP[act.category] + ';color:' + CAT_COLOR_MAP[act.category] + '">' + CAT_NAME_MAP[act.category] + '</span>';
+
+  if (act.needRes) {
+    html += '<div class="res-row' + (act.isReserved ? ' done' : '') + '" id="rrow-' + uid + '">' +
+            '<input type="checkbox" id="rcb-' + uid + '"' + (act.isReserved ? ' checked' : '') + '>' +
+            '<label for="rcb-' + uid + '">' + (act.isReserved ? 'R&#233;serv&#233;!' : '&#8203;A r&#233;server &mdash; important!') + '</label>' +
+            '</div>';
+  }
+
+  html += '<div class="drow"><span class="drow-icon">&#128336;</span>' +
+          '<span class="drow-text"><strong>' + fmt(act.startHour, act.startMin) + ' &ndash; ' + fmt(en.h, en.m) + '</strong> &middot; ' + act.duration + ' min</span></div>';
+
+  if (act.budget > 0) {
+    html += '<div class="drow"><span class="drow-icon">&#128176;</span><span class="drow-text">~' + act.budget + '&#8364; estim&#233;</span></div>';
+  }
+  if (act.info) {
+    html += '<div class="drow"><span class="drow-icon">&#128203;</span><span class="drow-text">' + esc(act.info).replace(/\n/g, "<br>") + '</span></div>';
+  }
+  if (act.website) {
+    var domain = esc(act.website.replace(/https?:\/\//, "").split("/")[0]);
+    html += '<div class="drow"><span class="drow-icon">&#127760;</span><a class="drow-text drow-link" href="' + esc(act.website) + '" target="_blank">' + domain + ' &#8599;</a></div>';
+  }
+  if (act.address) {
+    html += '<div class="drow"><span class="drow-icon">&#128205;</span><span class="drow-text">' + esc(act.address);
+    if (act.mapsUrl) html += '<br><a class="drow-link" href="' + esc(act.mapsUrl) + '" target="_blank">Voir sur Maps &#8599;</a>';
+    html += '</span></div>';
+  }
+
+  html += '<button class="btn btn-blue" id="det-edit-btn" style="margin-top:14px">Modifier</button>' +
+          '<button class="btn btn-green" id="det-done-btn">Marquer comme termin&#233;e</button>' +
+          '<button class="btn btn-red"  id="det-del-btn">Supprimer</button>';
+
+  G("det-body").innerHTML = html;
+
+  if (act.needRes) {
+    G("rcb-" + uid).addEventListener("change", function(ev) {
+      act.isReserved = ev.target.checked;
+      persist(); refreshDay(act.dayId);
+      var row = G("rrow-" + uid);
+      var lbl = row ? row.querySelector("label") : null;
+      if (row) row.classList.toggle("done", act.isReserved);
+      if (lbl) lbl.innerHTML = act.isReserved ? 'R&#233;serv&#233;!' : '&#8203;A r&#233;server &mdash; important!';
+    });
+  }
+  G("det-edit-btn").addEventListener("click", function() { openEditModal(uid); });
+  G("det-done-btn").addEventListener("click", function() { setDone(uid); closeModal("mod-detail"); });
+  G("det-del-btn").addEventListener("click",  function() { deleteAct(uid); });
+
+  openModal("mod-detail");
 }
 
-// ═══════════════ ADD/EDIT MODAL ══════════
-function populateDaySel(){
-  document.getElementById('f-day').innerHTML=DAYS.map(d=>
-    `<option value="${d.id}">${d.e} ${d.dn} ${d.date}</option>`).join('');
+// ── ADD / EDIT MODAL ───────────────────────────────────────────────────
+function populateDaySelect() {
+  var html = "";
+  for (var i = 0; i < DAY_DATA.length; i++) {
+    var d = DAY_DATA[i];
+    html += '<option value="' + d[0] + '">' + dayEmoji(DAY_EM[i]) + ' ' + d[2] + ' ' + d[1] + '</option>';
+  }
+  G("f-day").innerHTML = html;
 }
 
-function openAddModal(preDay){
-  editId=null;
-  document.getElementById('e-modal-title').textContent='Nouvelle activité';
-  ['f-title','f-notes','f-web','f-addr','f-map'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-day').value=preDay??activeDay;
-  document.getElementById('f-cat').value='activity';
-  document.getElementById('f-start').value='10:00';
-  document.getElementById('f-dur').value='60';
-  document.getElementById('f-cost').value='';
-  document.getElementById('f-res').checked=false;
-  closeMod('d-modal-bg');
-  document.getElementById('e-modal-bg').classList.add('open');
+function openAddModal(preDay) {
+  editingUid = null;
+  G("edit-title").textContent = "Nouvelle activit\u00e9";
+  G("f-name").value   = "";
+  G("f-notes").value  = "";
+  G("f-web").value    = "";
+  G("f-addr").value   = "";
+  G("f-map").value    = "";
+  G("f-cost").value   = "";
+  G("f-dur").value    = "60";
+  G("f-start").value  = "10:00";
+  G("f-cat").value    = "activity";
+  G("f-res").checked  = false;
+  G("f-day").value    = (preDay !== null && preDay !== undefined) ? preDay : activeDayId;
+  closeModal("mod-detail");
+  openModal("mod-edit");
 }
 
-function openEdit(id){
-  const a=st.acts.find(x=>x.id===id);if(!a)return;
-  editId=id;
-  document.getElementById('e-modal-title').textContent='Modifier activité';
-  document.getElementById('f-title').value=a.t;
-  document.getElementById('f-day').value=a.day;
-  document.getElementById('f-cat').value=a.c;
-  document.getElementById('f-start').value=ft(...a.s).replace('h',':');
-  document.getElementById('f-dur').value=a.d;
-  document.getElementById('f-notes').value=a.notes;
-  document.getElementById('f-web').value=a.web;
-  document.getElementById('f-addr').value=a.addr;
-  document.getElementById('f-map').value=a.map||'';
-  document.getElementById('f-cost').value=a.cost;
-  document.getElementById('f-res').checked=a.res;
-  closeMod('d-modal-bg');
-  document.getElementById('e-modal-bg').classList.add('open');
+function openEditModal(uid) {
+  var act = findAct(uid); if (!act) return;
+  editingUid = uid;
+  G("edit-title").textContent = "Modifier activit\u00e9";
+  G("f-name").value   = act.title;
+  G("f-day").value    = act.dayId;
+  G("f-cat").value    = act.category;
+  G("f-start").value  = p2(act.startHour) + ":" + p2(act.startMin);
+  G("f-dur").value    = act.duration;
+  G("f-notes").value  = act.info;
+  G("f-web").value    = act.website;
+  G("f-addr").value   = act.address;
+  G("f-map").value    = act.mapsUrl;
+  G("f-cost").value   = act.budget;
+  G("f-res").checked  = act.needRes;
+  closeModal("mod-detail");
+  openModal("mod-edit");
 }
 
-function saveAct(){
-  const title=document.getElementById('f-title').value.trim();
-  if(!title){document.getElementById('f-title').focus();return;}
-  const sv=document.getElementById('f-start').value;
-  const [sh,sm]=sv.split(':').map(Number);
-  const dur=parseInt(document.getElementById('f-dur').value)||60;
-  if(editId){
-    const a=st.acts.find(x=>x.id===editId);
-    if(a){
-      const oldDay=a.day;
-      a.t=title;a.day=+document.getElementById('f-day').value;
-      a.c=document.getElementById('f-cat').value;
-      a.s=[sh,sm];a.d=dur;
-      a.notes=document.getElementById('f-notes').value;
-      a.web=document.getElementById('f-web').value;
-      a.addr=document.getElementById('f-addr').value;
-      a.map=document.getElementById('f-map').value;
-      a.cost=parseFloat(document.getElementById('f-cost').value)||0;
-      a.res=document.getElementById('f-res').checked;
-      save();renderBlocks(oldDay);if(a.day!==oldDay)renderBlocks(a.day);
+function commitActivity() {
+  var name = G("f-name").value.trim();
+  if (!name) { G("f-name").focus(); return; }
+  var parts = G("f-start").value.split(":");
+  var sh = parseInt(parts[0]) || 0;
+  var sm = parseInt(parts[1]) || 0;
+  var dur = parseInt(G("f-dur").value) || 60;
+
+  if (editingUid) {
+    var act = findAct(editingUid);
+    if (act) {
+      var prevDay = act.dayId;
+      act.title     = name;
+      act.dayId     = parseInt(G("f-day").value);
+      act.category  = G("f-cat").value;
+      act.startHour = sh;
+      act.startMin  = sm;
+      act.duration  = dur;
+      act.info      = G("f-notes").value;
+      act.website   = G("f-web").value;
+      act.address   = G("f-addr").value;
+      act.mapsUrl   = G("f-map").value;
+      act.budget    = parseFloat(G("f-cost").value) || 0;
+      act.needRes   = G("f-res").checked;
+      persist();
+      refreshDay(prevDay);
+      if (act.dayId !== prevDay) refreshDay(act.dayId);
     }
   } else {
-    const na={id:uid(),t:title,day:+document.getElementById('f-day').value,
-      c:document.getElementById('f-cat').value,s:[sh,sm],d:dur,
-      notes:document.getElementById('f-notes').value,
-      web:document.getElementById('f-web').value,
-      addr:document.getElementById('f-addr').value,
-      map:document.getElementById('f-map').value,
-      cost:parseFloat(document.getElementById('f-cost').value)||0,
-      res:document.getElementById('f-res').checked,ok:false,done:false};
-    st.acts.push(na);
-    save();renderBlocks(na.day);
+    var newAct = {
+      uid: newUid(), title: name, dayId: parseInt(G("f-day").value),
+      category: G("f-cat").value, startHour: sh, startMin: sm, duration: dur,
+      info: G("f-notes").value, website: G("f-web").value, address: G("f-addr").value,
+      mapsUrl: G("f-map").value, budget: parseFloat(G("f-cost").value) || 0,
+      needRes: G("f-res").checked, isReserved: false, isDone: false
+    };
+    ST.acts.push(newAct);
+    persist();
+    refreshDay(newAct.dayId);
   }
-  closeMod('e-modal-bg');
+  closeModal("mod-edit");
 }
 
-function delAct(id){
-  if(!confirm('Supprimer cette activité?'))return;
-  const a=st.acts.find(x=>x.id===id);if(!a)return;
-  const day=a.day;
-  st.acts=st.acts.filter(x=>x.id!==id);
-  save();renderBlocks(day);closeMod('d-modal-bg');
+function deleteAct(uid) {
+  if (!confirm("Supprimer cette activit\u00e9 ?")) return;
+  var act = findAct(uid); if (!act) return;
+  var dayId = act.dayId;
+  ST.acts = ST.acts.filter(function(a) { return a.uid !== uid; });
+  persist(); refreshDay(dayId); closeModal("mod-detail");
 }
 
-// ═══════════════ NAV ══════════════════════
-function setDay(id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.day-col').forEach(c=>c.classList.remove('active'));
-  document.getElementById(`tab-${id}`)?.classList.add('active');
-  document.getElementById(`day-${id}`)?.classList.add('active');
-  document.getElementById(`tab-${id}`)?.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-  activeDay=id;
+// ── UTILS ──────────────────────────────────────────────────────────────
+function setDay(id) {
+  var tabs = G("tabs").querySelectorAll(".tab");
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("on");
+  var days = document.querySelectorAll(".day");
+  for (var j = 0; j < days.length; j++) days[j].classList.remove("on");
+  var tab = G("tab-" + id); if (tab) { tab.classList.add("on"); tab.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" }); }
+  var day = G("day-" + id); if (day) day.classList.add("on");
+  activeDayId = id;
 }
 
-function toggleSec(bodyId,togId){
-  const b=document.getElementById(bodyId),t=document.getElementById(togId);
-  const hidden=b.classList.toggle('hidden');
-  if(t)t.classList.toggle('closed',hidden);
+function toggleSection(bodyId, arrId) {
+  var body = G(bodyId); var arr = G(arrId);
+  body.classList.toggle("hide");
+  arr.classList.toggle("shut", body.classList.contains("hide"));
 }
 
-function closeMod(id){document.getElementById(id).classList.remove('open');}
+function openModal(id)  { G(id).classList.add("open"); }
+function closeModal(id) { G(id).classList.remove("open"); }
 
-function updateCosts(){
-  const total=st.acts.filter(a=>!a.done).reduce((s,a)=>s+(a.cost||0),0);
-  const el=document.getElementById('total-cost');
-  if(el)el.textContent=`~${total}€ activités`;
+function refreshTotalCost() {
+  var total = 0;
+  for (var i = 0; i < ST.acts.length; i++) {
+    if (!ST.acts[i].isDone) total += ST.acts[i].budget || 0;
+  }
+  var el = G("total-cost");
+  if (el) el.textContent = "~" + total + "\u20ac activit\u00e9s";
 }
 
-function openResetModal(){document.getElementById('s-modal-bg').classList.add('open');}
-
-function confirmReset(){
-  if(!confirm('Réinitialiser tout l\'itinéraire?\nToutes vos modifications seront perdues.'))return;
-  localStorage.removeItem(SK);location.reload();
+function doReset() {
+  if (!confirm("R\u00e9initialiser tout l'itin\u00e9raire ?\nToutes vos modifications seront perdues.")) return;
+  localStorage.removeItem(KEY);
+  location.reload();
 }
 
 init();
+})();
 </script>
+
 </body>
 </html>
