@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🌷 Amsterdam — Option A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F7F5F2; --surface:#FFFFFF; --border:#E8E3DC; --border-soft:#F0EBE3;
+  --text:#1C1917; --text-2:#78716C; --text-3:#A8A29E;
+  --accent:#2563EB; --accent-soft:#EFF6FF;
+  --hour-h:68px; --radius:10px;
+  --font:'Plus Jakarta Sans',sans-serif;
+  --c-act:#2563EB; --bg-act:#EFF6FF;
+  --c-trn:#D97706; --bg-trn:#FFFBEB;
+  --c-meal:#16A34A; --bg-meal:#F0FDF4;
+  --c-rest:#7C3AED; --bg-rest:#F5F3FF;
+  --c-opt:#B45309; --bg-opt:#FFF7ED;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;gap:10px}
+.hdr-logo{font-size:20px;line-height:1}
+.hdr-info{flex:1}
+.hdr-title{font-size:15px;font-weight:800;letter-spacing:-.3px;line-height:1}
+.hdr-sub{font-size:10px;color:var(--text-2);margin-top:2px}
+.hdr-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-family:var(--font);font-size:11px;font-weight:600;color:var(--text-2);cursor:pointer}
+
+/* TABS */
+.tabs{display:flex;overflow-x:auto;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:48px;z-index:99;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:7px 12px 8px;cursor:pointer;border-bottom:2px solid transparent;text-align:center;min-width:68px;transition:border-color .15s,color .15s}
+.tab.active{border-bottom-color:var(--accent);color:var(--accent)}
+.tab-e{font-size:17px;display:block;line-height:1.3}
+.tab-d{font-size:10px;font-weight:700;color:inherit;display:block}
+.tab-n{font-size:9px;color:var(--text-3);display:block}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:5px 10px;padding:7px 14px;background:var(--surface);border-bottom:1px solid var(--border-soft)}
+.lg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)}
+.lg-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+
+/* DAY COLUMN */
+.day-col{display:none}
+.day-col.active{display:block}
+.day-hdr{background:var(--surface);padding:10px 16px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:8px}
+.day-hdr-text h2{font-size:13px;font-weight:700}
+.day-hdr-text p{font-size:10px;color:var(--text-2);margin-top:1px}
+.day-cost{margin-left:auto;background:#F0FDF4;color:#15803D;border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700}
+
+/* GRID */
+.grid-wrap{position:relative;padding-left:42px;background:var(--bg);min-height:calc(var(--hour-h)*16)}
+.hr-line{position:absolute;left:42px;right:0;height:var(--hour-h);border-top:1px solid var(--border-soft)}
+.hr-line:nth-child(even){background:rgba(255,255,255,.55)}
+.hr-label{position:absolute;left:0;width:38px;height:var(--hour-h);display:flex;align-items:flex-start;justify-content:flex-end;padding:5px 6px 0 0;font-size:9px;font-weight:600;color:var(--text-3)}
+
+/* BLOCKS */
+.blk{position:absolute;left:46px;right:6px;border-radius:var(--radius);padding:5px 8px;cursor:pointer;border-left:3px solid;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:transform .12s,box-shadow .12s;z-index:10}
+.blk.dragging{opacity:.3}
+.blk.long-pressing{transform:scale(1.02);box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.blk-name{font-size:11px;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blk-time{font-size:9px;color:var(--text-2);margin-top:2px;font-weight:500}
+.blk-warn{display:inline-flex;align-items:center;gap:2px;margin-top:3px;font-size:8px;font-weight:700;background:rgba(217,119,6,.15);color:#B45309;border-radius:4px;padding:1px 4px}
+.blk-ok{display:inline-flex;align-items:center;gap:2px;margin-top:3px;font-size:8px;font-weight:700;background:rgba(22,163,74,.12);color:#15803D;border-radius:4px;padding:1px 4px}
+.cat-activity{background:var(--bg-act);border-color:var(--c-act)}
+.cat-transport{background:var(--bg-trn);border-color:var(--c-trn)}
+.cat-meal{background:var(--bg-meal);border-color:var(--c-meal)}
+.cat-rest{background:var(--bg-rest);border-color:var(--c-rest)}
+.cat-optional{background:var(--bg-opt);border-color:var(--c-opt)}
+
+/* DRAG GHOST */
+#drag-ghost{display:none;position:fixed;z-index:600;pointer-events:none;border-radius:var(--radius);border-left:3px solid;padding:7px 10px;font-family:var(--font);font-size:11px;font-weight:700;max-width:190px;box-shadow:0 8px 24px rgba(0,0,0,.18);transform:translate(-50%,-110%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* DROP LINE */
+.drop-line{display:none;position:absolute;left:42px;right:0;height:2px;background:var(--accent);z-index:20;pointer-events:none}
+.drop-line::before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.drop-time-label{position:absolute;left:-41px;top:-9px;width:38px;background:var(--accent);color:#fff;border-radius:4px;padding:1px 3px;font-size:9px;font-weight:700;text-align:center}
+
+/* FREE DAY */
+.free-day{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text-3);pointer-events:none}
+.free-day .icon{font-size:32px}
+.free-day p{font-size:13px;font-weight:600}
+.free-day small{font-size:11px}
+
+/* SECTIONS */
+.section{margin:12px;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden}
+.sec-hdr{padding:12px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--border-soft)}
+.sec-hdr h2{font-size:13px;font-weight:700;flex:1}
+.sec-toggle{font-size:11px;color:var(--text-3);transition:transform .2s}
+.sec-toggle.closed{transform:rotate(-90deg)}
+.sec-body{padding:12px 14px}
+.sec-body.hidden{display:none}
+
+/* COMPLETED */
+.comp-drop{min-height:50px;border:2px dashed var(--border);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;transition:border-color .15s,background .15s}
+.comp-drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.comp-empty{text-align:center;padding:10px;font-size:11px;color:var(--text-3)}
+.comp-item{background:var(--bg);border-radius:7px;padding:7px 10px;display:flex;align-items:center;gap:8px}
+.comp-name{font-size:11px;color:var(--text-3);text-decoration:line-through;flex:1}
+.comp-restore{font-size:10px;font-weight:700;color:var(--accent);padding:3px 8px;background:var(--accent-soft);border-radius:5px;cursor:pointer;white-space:nowrap;border:none;font-family:var(--font)}
+
+/* NOTES */
+.notes-ta{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:var(--font);font-size:13px;line-height:1.55;resize:vertical;min-height:100px;background:var(--bg);color:var(--text);outline:none}
+.notes-ta:focus{border-color:var(--accent);background:var(--surface)}
+
+/* FAB */
+.fab{position:fixed;bottom:22px;right:22px;width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.4);z-index:98;display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s}
+.fab:active{transform:scale(.94)}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(28,25,23,.6);z-index:200;align-items:flex-end;backdrop-filter:blur(2px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .22s cubic-bezier(.32,.72,0,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hdr{position:sticky;top:0;background:var(--surface);padding:14px 16px 12px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px;z-index:10}
+.modal-hdr h3{font-size:15px;font-weight:800;flex:1;letter-spacing:-.3px}
+.modal-close{width:28px;height:28px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:16px;color:var(--text-2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-body{padding:14px 16px 8px}
+
+.field{margin-bottom:13px}
+.field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-2);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:var(--font);font-size:14px;color:var(--text);background:var(--surface);outline:none;-webkit-appearance:none;appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:72px;line-height:1.5}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.d-row{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--border-soft)}
+.d-row:last-of-type{border-bottom:none}
+.d-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.d-text{font-size:13px;line-height:1.55;flex:1;color:#3C3733}
+.d-link{color:var(--accent);text-decoration:none;font-weight:600}
+
+.res-box{background:#FFFBEB;border-radius:9px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;border:1px solid #FDE68A}
+.res-box input[type=checkbox]{width:17px;height:17px;cursor:pointer;flex-shrink:0;accent-color:var(--accent)}
+.res-box label{font-size:13px;font-weight:600;cursor:pointer;flex:1}
+.res-box.done{background:#F0FDF4;border-color:#BBF7D0}
+
+.cat-pill{display:inline-block;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:7px;transition:opacity .12s}
+.btn:active{opacity:.85}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-success{background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0}
+.btn-danger{background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA}
+.btn-ghost{background:var(--bg);color:var(--text-2);border:1px solid var(--border)}
+
+.check-row{display:flex;align-items:center;gap:9px;margin-bottom:13px}
+.check-row input{width:17px;height:17px;cursor:pointer;accent-color:var(--accent)}
+.check-row label{font-size:13px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo">🌷</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Amsterdam — Option A</div>
+    <div class="hdr-sub">18–25 Avr · Famille 3 · <span id="total-cost"></span></div>
+  </div>
+  <div class="hdr-actions">
+    <button class="hdr-btn" onclick="openResetModal()">⚙️</button>
+  </div>
+</div>
+
+<div class="tabs" id="tabs"></div>
+
+<div class="legend">
+  <div class="lg"><div class="lg-dot" style="background:var(--c-act)"></div>Activité</div>
+  <div class="lg"><div class="lg-dot" style="background:var(--c-trn)"></div>Transport</div>
+  <div class="lg"><div class="lg-dot" style="background:var(--c-meal)"></div>Repas</div>
+  <div class="lg"><div class="lg-dot" style="background:var(--c-rest)"></div>Repos</div>
+  <div class="lg"><div class="lg-dot" style="background:var(--c-opt)"></div>Optionnel</div>
+  <div class="lg" style="margin-left:auto;font-size:9px;color:var(--text-3)">Appui long = déplacer</div>
+</div>
+
+<div id="days-wrap"></div>
+
+<div class="section">
+  <div class="sec-hdr" onclick="toggleSec('comp-body','comp-tog')">
+    <h2>✅ Activités terminées</h2>
+    <span class="sec-toggle" id="comp-tog">▼</span>
+  </div>
+  <div class="sec-body" id="comp-body">
+    <div class="comp-drop" id="comp-drop"></div>
+  </div>
+</div>
+
+<div class="section" style="margin-bottom:80px">
+  <div class="sec-hdr" onclick="toggleSec('notes-body','notes-tog')">
+    <h2>📝 Notes &amp; Infos pratiques</h2>
+    <span class="sec-toggle" id="notes-tog">▼</span>
+  </div>
+  <div class="sec-body" id="notes-body">
+    <textarea class="notes-ta" id="notes-ta" rows="7" placeholder="Vos notes personnelles...&#10;&#10;💡 Infos utiles :&#10;• Urgences : 112&#10;• Bastion Hotel : Schipluidenlaan 12, Amsterdam&#10;• Carte OV-chipkaart pour les transports&#10;• Google Maps offline recommandé"></textarea>
+  </div>
+</div>
+
+<button class="fab" onclick="openAddModal(null)">+</button>
+<div id="drag-ghost"></div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-bg" id="d-modal-bg" onclick="if(event.target===this)closeMod('d-modal-bg')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3 id="d-title">Activité</h3>
+      <button class="modal-close" onclick="closeMod('d-modal-bg')">×</button>
+    </div>
+    <div class="modal-body" id="d-body"></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-bg" id="e-modal-bg" onclick="if(event.target===this)closeMod('e-modal-bg')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3 id="e-modal-title">Nouvelle activité</h3>
+      <button class="modal-close" onclick="closeMod('e-modal-bg')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Titre</label><input id="f-title" type="text" placeholder="Nom de l'activité"></div>
+      <div class="field field-row">
+        <div><label>Jour</label><select id="f-day"></select></div>
+        <div><label>Catégorie</label>
+          <select id="f-cat">
+            <option value="activity">🔵 Activité</option>
+            <option value="transport">🟠 Transport</option>
+            <option value="meal">🟢 Repas</option>
+            <option value="rest">🟣 Repos</option>
+            <option value="optional">🟡 Optionnel</option>
+          </select>
+        </div>
+      </div>
+      <div class="field field-row">
+        <div><label>Heure début</label><input id="f-start" type="time" value="10:00"></div>
+        <div><label>Durée (min)</label><input id="f-dur" type="number" placeholder="60" min="15" step="15"></div>
+      </div>
+      <div class="field"><label>Notes / Conseils</label><textarea id="f-notes" placeholder="Infos pratiques, prix..."></textarea></div>
+      <div class="field"><label>Site web</label><input id="f-web" type="url" placeholder="https://..."></div>
+      <div class="field"><label>Adresse</label><input id="f-addr" type="text" placeholder="Adresse ou lieu"></div>
+      <div class="field"><label>Lien Google Maps</label><input id="f-map" type="url" placeholder="https://maps.google.com/..."></div>
+      <div class="field"><label>Coût estimé (€)</label><input id="f-cost" type="number" placeholder="0" min="0"></div>
+      <div class="check-row"><input id="f-res" type="checkbox"><label for="f-res">Nécessite une réservation</label></div>
+      <button class="btn btn-primary" onclick="saveAct()">Enregistrer</button>
+      <button class="btn btn-ghost" onclick="closeMod('e-modal-bg')" style="margin-top:8px">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="s-modal-bg" onclick="if(event.target===this)closeMod('s-modal-bg')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3>⚙️ Paramètres</h3>
+      <button class="modal-close" onclick="closeMod('s-modal-bg')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;line-height:1.5">Toutes les modifications sont sauvegardées automatiquement dans votre navigateur (localStorage).</p>
+      <button class="btn btn-danger" onclick="confirmReset()">🗑 Réinitialiser l'itinéraire</button>
+      <button class="btn btn-ghost" onclick="closeMod('s-modal-bg')" style="margin-top:8px">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════ CONSTANTS ════════════════
+const SH=7, EH=23, HH=68, SNAP=15;
+const SK='amsterdam_v4';
+
+const DAYS=[
+  {id:0,date:'18 Avr',dn:'Samedi',   lbl:'Arrivée',                e:'✈️'},
+  {id:1,date:'19 Avr',dn:'Dimanche', lbl:'ARTIS & Vondelpark',     e:'🦁'},
+  {id:2,date:'20 Avr',dn:'Lundi',    lbl:'Keukenhof & Tulipes',    e:'🌷'},
+  {id:3,date:'21 Avr',dn:'Mardi',    lbl:'Canaux & Rijksmuseum',   e:'🎨'},
+  {id:4,date:'22 Avr',dn:'Mercredi', lbl:'Zaanse Schans',          e:'⚙️'},
+  {id:5,date:'23 Avr',dn:'Jeudi',    lbl:'Amsterdam Noord',        e:'🏙️'},
+  {id:6,date:'24 Avr',dn:'Vendredi', lbl:'Journée libre',          e:'⭐'},
+  {id:7,date:'25 Avr',dn:'Samedi',   lbl:'Départ',                 e:'🏠'},
+];
+
+const CAT_LABEL={activity:'Activité',transport:'Transport',meal:'Repas',rest:'Repos',optional:'Optionnel'};
+const CAT_COLOR={activity:'var(--c-act)',transport:'var(--c-trn)',meal:'var(--c-meal)',rest:'var(--c-rest)',optional:'var(--c-opt)'};
+const CAT_BG   ={activity:'var(--bg-act)',transport:'var(--bg-trn)',meal:'var(--bg-meal)',rest:'var(--bg-rest)',optional:'var(--bg-opt)'};
+
+// ═══════════════ DEFAULT DATA ═════════════
+const DEFAULT_ACTS=[
+  // SAM 18 AVR
+  {id:'a01',day:0,s:[20,0],d:90, t:'✈️ Atterrissage & Trajet hôtel',c:'transport',res:false,ok:false,
+   notes:'Vol LYS→AMS. Récupérer les bagages puis rejoindre l\'hôtel.\nOption: bus Connexxion ligne 370 depuis Schiphol (~30 min, ~7€).\nOu taxi: ~35-45€.',
+   web:'https://www.schiphol.nl/en/',addr:'Amsterdam Airport Schiphol',map:'https://maps.google.com/?q=Amsterdam+Airport+Schiphol',cost:0,done:false},
+  {id:'a02',day:0,s:[21,30],d:60,t:'🍽 Dîner & Installation',c:'meal',res:false,ok:false,
+   notes:'Repas léger après le voyage. Restaurants à proximité de l\'hôtel ou room service.\nHôtel: Schipluidenlaan 12, Amsterdam.',
+   web:'',addr:'Bastion Hotel Amsterdam Zuidwest',map:'https://maps.google.com/?q=Bastion+Hotel+Amsterdam+Zuidwest',cost:30,done:false},
+
+  // DIM 19 AVR
+  {id:'b01',day:1,s:[9,0], d:60, t:'☕ Petit-déjeuner',c:'meal',res:false,ok:false,notes:'Petit-déjeuner à l\'hôtel.',web:'',addr:'',map:'',cost:20,done:false},
+  {id:'b02',day:1,s:[10,0],d:150,t:'🦁 Zoo ARTIS',c:'activity',res:true,ok:false,
+   notes:'Zoo historique d\'Amsterdam (1838). AQUARIUM inclus! Aires de jeux, planétarium. Gratuit -3 ans. 27€/adulte.\n⚠️ ACHETER BILLETS EN LIGNE À L\'AVANCE sur artis.nl.',
+   web:'https://www.artis.nl/en/visit/tickets/',addr:'Plantage Kerklaan 38-40, 1018 CZ Amsterdam',map:'https://maps.google.com/?q=ARTIS+Amsterdam',cost:54,done:false},
+  {id:'b03',day:1,s:[12,30],d:60,t:'🍳 Déjeuner – Box Sociaal',c:'meal',res:false,ok:false,
+   notes:'Excellent brunch australien. Très adapté bébés. 4.7/5. Recommandé le week-end de réserver.',
+   web:'https://boxsociaal.nl',addr:'Plantage Middenlaan 30A, 1018 DG Amsterdam',map:'https://maps.google.com/?q=Box+Sociaal+Amsterdam',cost:35,done:false},
+  {id:'b04',day:1,s:[13,30],d:90,t:'😴 Sieste bébé',c:'rest',res:false,ok:false,notes:'Sieste vers 13h. Retour à l\'hôtel ou sieste dans la poussette.',web:'',addr:'',map:'',cost:0,done:false},
+  {id:'b05',day:1,s:[15,0],d:120,t:'🌳 Vondelpark',c:'activity',res:false,ok:false,
+   notes:'Plus grand parc d\'Amsterdam. GRATUIT. Aires de jeux, canards à nourrir, café Groot Melkhuis avec terrasse et aire de jeux. 100% adapté poussettes.',
+   web:'',addr:'Vondelpark, 1071 AA Amsterdam',map:'https://maps.google.com/?q=Vondelpark+Amsterdam',cost:0,done:false},
+  {id:'b06',day:1,s:[18,30],d:90,t:'🍽 Dîner – Quartier Jordaan',c:'meal',res:false,ok:false,
+   notes:'⚠️ Restaurant Olijfje FERMÉ LE DIMANCHE.\nAlternatives dans le Jordaan: De Reiger (brasserie hollandaise), Toscanini (italien, réserver!), ou Café 't Smalle (ambiance canal).',
+   web:'',addr:'Jordaan, Amsterdam',map:'https://maps.google.com/?q=Jordaan+Amsterdam',cost:60,done:false},
+
+  // LUN 20 AVR
+  {id:'c01',day:2,s:[7,30],d:30, t:'☕ Petit-déjeuner rapide',c:'meal',res:false,ok:false,notes:'Départ matinal! Petit-déjeuner rapide à l\'hôtel.',web:'',addr:'',map:'',cost:15,done:false},
+  {id:'c02',day:2,s:[8,0], d:30, t:'🚗 Récupération voiture',c:'transport',res:true,ok:false,
+   notes:'⚠️ RÉSERVER EN AVANCE!\nRentalcars.com ou AutoEurope pour comparer les prix.\nInclure siège auto bébé. Récupérer près de l\'hôtel ou Amsterdam Zuid station.',
+   web:'https://www.rentalcars.com',addr:'Amsterdam Zuidwest / Amsterdam Zuid',map:'',cost:70,done:false},
+  {id:'c03',day:2,s:[8,30],d:30, t:'🚗 Route vers Keukenhof',c:'transport',res:false,ok:false,
+   notes:'~30 min de conduite depuis Amsterdam. Parking sur place: 7€/jour. GPS: Stationsweg 166A, Lisse.',
+   web:'',addr:'Stationsweg 166A, 2161 AM Lisse',map:'https://maps.google.com/?q=Keukenhof+Lisse',cost:7,done:false},
+  {id:'c04',day:2,s:[9,0], d:210,t:'🌷 Jardins de Keukenhof',c:'activity',res:true,ok:false,
+   notes:'7 MILLIONS de tulipes en fleurs! Le plus grand jardin fleuri du monde.\n✅ LUNDI = beaucoup moins de monde qu\'en week-end!\n⚠️ BILLETS EN LIGNE OBLIGATOIRES sur keukenhof.nl\n32€/adulte — GRATUIT -4 ans.\nAllées 100% adaptées poussettes. Cafés sur place.',
+   web:'https://keukenhof.nl/en/tickets/',addr:'Stationsweg 166A, 2161 AM Lisse',map:'https://maps.google.com/?q=Keukenhof+Gardens',cost:64,done:false},
+  {id:'c05',day:2,s:[12,30],d:30, t:'🥗 Déjeuner au Keukenhof',c:'meal',res:false,ok:false,
+   notes:'Cafés sur place (file d\'attente possible). Alternative: pique-nique préparé à l\'avance — il y a de belles tables de pique-nique!',
+   web:'',addr:'Keukenhof, Lisse',map:'',cost:25,done:false},
+  {id:'c06',day:2,s:[13,0],d:120,t:'😴 Sieste + 🌷 Champs de tulipes',c:'activity',res:false,ok:false,
+   notes:'Bébé dort dans le siège auto pendant la balade!\nExplorer les champs colorés entre Noordwijkerhout et Lisse. Arrêts photos libres au bord des routes. GRATUIT.\nItinéraire: Keukenhof → Herenweg → Noordwijkerhout → retour.',
+   web:'',addr:'Région Noordwijkerhout / Lisse',map:'https://maps.google.com/?q=Noordwijkerhout+tulip+fields',cost:0,done:false},
+  {id:'c07',day:2,s:[15,0],d:60, t:'🚗 Retour & Rendu voiture',c:'transport',res:false,ok:false,notes:'~30 min de route vers Amsterdam, puis retour de la voiture au point de prise en charge.',web:'',addr:'',map:'',cost:0,done:false},
+  {id:'c08',day:2,s:[16,0],d:150,t:'😴 Repos à l\'hôtel',c:'rest',res:false,ok:false,notes:'Grande journée! Repos bien mérité.',web:'',addr:'',map:'',cost:0,done:false},
+  {id:'c09',day:2,s:[18,30],d:90,t:'🥞 Dîner – The Pancake Bakery',c:'meal',res:false,ok:false,
+   notes:'Crêpes hollandaises authentiques depuis 1974. Sous-sol avec murs en briques, ambiance très authentique. Ouvert jusqu\'à 21h. Adapté bébé.',
+   web:'https://www.pancake.nl',addr:'Prinsengracht 191, 1015 DS Amsterdam',map:'https://maps.google.com/?q=Pancake+Bakery+Amsterdam',cost:45,done:false},
+
+  // MAR 21 AVR
+  {id:'d01',day:3,s:[9,0], d:60, t:'☕ Petit-déjeuner',c:'meal',res:false,ok:false,notes:'',web:'',addr:'',map:'',cost:20,done:false},
+  {id:'d02',day:3,s:[10,0],d:60, t:'🚢 Croisière sur les canaux',c:'activity',res:true,ok:false,
+   notes:'Amsterdam Boat Trips: 4.9/5 sur 5300+ avis. Open bar inclus! Guide audio en français. ~18€/adulte.\nTrès reposant avec bébé — idéal si il s\'endort!\n⚠️ Réserver en ligne.',
+   web:'https://www.amsterdamboattrips.com',addr:'Oudezijds Voorburgwal 226, 1012 GJ Amsterdam',map:'https://maps.google.com/?q=Amsterdam+Boat+Trips',cost:36,done:false},
+  {id:'d03',day:3,s:[11,30],d:60, t:'🎨 Rijksmuseum',c:'activity',res:true,ok:false,
+   notes:'⚠️ BILLETS HORODATÉS OBLIGATOIRES sur rijksmuseum.nl\n22,50€/adulte.\nStratégie bébé: direct à la GALERIE D\'HONNEUR (2e étage).\n→ La Ronde de Nuit de Rembrandt\n→ La Laitière de Vermeer\n45-60 min suffit. Ascenseur disponible.',
+   web:'https://www.rijksmuseum.nl/en/visit',addr:'Museumstraat 1, 1071 XX Amsterdam',map:'https://maps.google.com/?q=Rijksmuseum+Amsterdam',cost:45,done:false},
+  {id:'d04',day:3,s:[12,30],d:60, t:'🥞 Déjeuner – The Pancake Bakery',c:'meal',res:false,ok:false,
+   notes:'Si pas visité lundi. Sous-sol en briques, très authentique. Alternatives: cafés autour du Vondelpark (5 min à pied).',
+   web:'https://www.pancake.nl',addr:'Prinsengracht 191, 1015 DS Amsterdam',map:'https://maps.google.com/?q=Pancake+Bakery+Amsterdam',cost:35,done:false},
+  {id:'d05',day:3,s:[13,30],d:90, t:'😴 Sieste à l\'hôtel',c:'rest',res:false,ok:false,notes:'',web:'',addr:'',map:'',cost:0,done:false},
+  {id:'d06',day:3,s:[15,30],d:120,t:'🏘️ Quartier Jordaan',c:'activity',res:false,ok:false,
+   notes:'Le quartier le plus charmant d\'Amsterdam. Canaux pittoresques, boutiques, galeries. GRATUIT. Très adapté poussettes.\nIncontournable: Brouwersgracht (le canal le plus photographié).',
+   web:'',addr:'Jordaan, Amsterdam',map:'https://maps.google.com/?q=Jordaan+Amsterdam',cost:0,done:false},
+  {id:'d07',day:3,s:[18,30],d:90, t:'🍝 Dîner – Il Vicolo',c:'meal',res:false,ok:false,
+   notes:'⭐ MEILLEUR RESTAURANT. 4.8/5 sur 2600+ avis. TRÈS petit (8-10 tables seulement)!\nPâtes maison incroyables. Must: tagliatelle pistache-burrata, carbonara.\nY aller à 17h ou appeler avant: pas de réservation en ligne.',
+   web:'',addr:'Taksteeg 3, 1012 PB Amsterdam',map:'https://maps.google.com/?q=Il+Vicolo+Amsterdam',cost:65,done:false},
+
+  // MER 22 AVR
+  {id:'e01',day:4,s:[9,0], d:60, t:'☕ Petit-déjeuner',c:'meal',res:false,ok:false,notes:'',web:'',addr:'',map:'',cost:20,done:false},
+  {id:'e02',day:4,s:[10,0],d:30, t:'🚆 Train → Zaanse Schans',c:'transport',res:false,ok:false,
+   notes:'Depuis Amsterdam Centraal vers Zaandijk-Zaanse Schans. ~30 min. ~10€ A/R par adulte. Billets: NS.nl ou distributeurs à la gare.',
+   web:'https://www.ns.nl/en',addr:'Amsterdam Centraal Station',map:'https://maps.google.com/?q=Amsterdam+Centraal+Station',cost:20,done:false},
+  {id:'e03',day:4,s:[10,30],d:120,t:'⚙️ Zaanse Schans – Moulins',c:'activity',res:false,ok:false,
+   notes:'Village hollandais historique et authentique. Accès au village: GRATUIT.\nMoulins fonctionnels à voir! Démonstrations de sabots en bois, dégustation de fromage. Grand espace extérieur idéal pour bébé.',
+   web:'https://www.dezaanseschans.nl/en/',addr:'Schansend 1, 1509 AW Zaandam',map:'https://maps.google.com/?q=Zaanse+Schans',cost:10,done:false},
+  {id:'e04',day:4,s:[12,30],d:60, t:'🥗 Déjeuner – Zaanse Schans',c:'meal',res:false,ok:false,
+   notes:'Cafés sur place. La boulangerie "De Zaanse Schans Bakery" est recommandée. Ou emporter un pique-nique depuis Amsterdam.',
+   web:'',addr:'Zaanse Schans',map:'',cost:30,done:false},
+  {id:'e05',day:4,s:[13,30],d:90, t:'😴 Sieste dans la poussette',c:'rest',res:false,ok:false,notes:'Bébé dort dans la poussette pendant que vous continuez d\'explorer.',web:'',addr:'',map:'',cost:0,done:false},
+  {id:'e06',day:4,s:[15,0], d:30, t:'🚆 Train retour Amsterdam',c:'transport',res:false,ok:false,notes:'Retour en train vers Amsterdam Centraal.',web:'',addr:'',map:'',cost:0,done:false},
+  {id:'e07',day:4,s:[15,45],d:105,t:'🔬 NEMO Science Museum ⭐',c:'optional',res:false,ok:false,
+   notes:'OPTIONNEL — seulement si vous avez de l\'énergie!\nMusée des sciences interactif, adapté aux tout-petits. 20€/adulte.\nTerrasse sur le toit GRATUITE avec vue panoramique sur Amsterdam. Ouvert jusqu\'à 17h30.',
+   web:'https://www.nemosciencemuseum.nl/en/',addr:'Oosterdok 2, 1011 VX Amsterdam',map:'https://maps.google.com/?q=NEMO+Science+Museum+Amsterdam',cost:40,done:false},
+  {id:'e08',day:4,s:[18,30],d:90, t:'🍽 Dîner – Restaurant Olijfje',c:'meal',res:false,ok:false,
+   notes:'Méditerranéen, 4.7/5 sur 4000+ avis. Grand choix de mezze. Service chaleureux. Prix raisonnable. Recommandé par les locaux.',
+   web:'',addr:'Valkenburgerstraat 223D, 1011 MJ Amsterdam',map:'https://maps.google.com/?q=Restaurant+Olijfje+Amsterdam',cost:60,done:false},
+
+  // JEU 23 AVR
+  {id:'f01',day:5,s:[9,30],d:90, t:'☕ Grasse matinée & Petit-déj',c:'meal',res:false,ok:false,notes:'Journée plus détendue — profitez du matin tranquillement!',web:'',addr:'',map:'',cost:20,done:false},
+  {id:'f02',day:5,s:[11,0],d:30, t:'⛴️ Ferry gratuit vers Noord',c:'transport',res:false,ok:false,
+   notes:'Ferry GRATUIT depuis l\'arrière d\'Amsterdam Centraal. Traversée 5 min. Bébé adore le bateau! Fréquence: toutes les 10-15 min.',
+   web:'',addr:'Amsterdam Centraal, côté Nord (IJ-zijde)',map:'https://maps.google.com/?q=GVB+Ferry+Amsterdam+Noord',cost:0,done:false},
+  {id:'f03',day:5,s:[11,30],d:120,t:'🎨 Amsterdam Noord – NDSM',c:'activity',res:false,ok:false,
+   notes:'Quartier créatif post-industriel. Street art, galeries, restaurants branchés. MOINS touristique qu\'Amsterdam centre. NDSM Wharf = anciens chantiers navals reconvertis en espace culturel.',
+   web:'',addr:'NDSM-Plein 28, 1033 SB Amsterdam-Noord',map:'https://maps.google.com/?q=NDSM+Amsterdam+Noord',cost:0,done:false},
+  {id:'f04',day:5,s:[13,0],d:60, t:'🐟 Déjeuner – Pllek ou Stork',c:'meal',res:false,ok:false,
+   notes:'Pllek: restaurant dans des conteneurs recyclés, terrasse sur l\'eau, très cool.\nOu Café-Restaurant Stork: spécialités de la mer, cadre industriel incroyable.',
+   web:'https://www.pllek.nl',addr:'TT. Neveritaweg 59, 1033 WB Amsterdam',map:'https://maps.google.com/?q=Pllek+Amsterdam',cost:35,done:false},
+  {id:'f05',day:5,s:[14,0],d:90, t:'😴 Sieste à l\'hôtel',c:'rest',res:false,ok:false,notes:'Retour en ferry + trajet hôtel. Sieste de l\'après-midi.',web:'',addr:'',map:'',cost:0,done:false},
+  {id:'f06',day:5,s:[15,30],d:120,t:'💗 Barbie: The Dream Experience',c:'optional',res:false,ok:false,
+   notes:'OPTIONNEL. 4.9/5 sur 2900+ avis! 25€/adulte.\nExpérience immersive et très Instagram dans plusieurs salles thématiques.\nCafé rose à l\'intérieur. Ouvert jusqu\'à 20h. Même pour les adultes, c\'est fun!',
+   web:'https://barbiedreamexperience.com',addr:'Meeuwenlaan 88-B, 1021 JK Amsterdam',map:'https://maps.google.com/?q=Barbie+Dream+Experience+Amsterdam',cost:50,done:false},
+  {id:'f07',day:5,s:[19,0],d:90, t:'🍝 Dîner libre',c:'meal',res:false,ok:false,
+   notes:'Soirée libre! Options:\n• Réessayer Il Vicolo si pas eu de place mardi\n• Pancakes Amsterdam (près de la gare)\n• Foodhallen (marché couvert, beaucoup de choix)',
+   web:'',addr:'Amsterdam',map:'',cost:50,done:false},
+
+  // VEN 24 AVR — Journée libre (pas d'activités pré-remplies)
+
+  // SAM 25 AVR
+  {id:'h01',day:7,s:[9,0], d:120,t:'🏨 Check-out hôtel',c:'transport',res:false,ok:false,
+   notes:'Checkout avant 11h. Déposer les bagages à la consigne de l\'hôtel ou à Amsterdam Centraal (consignes automatiques).',
+   web:'',addr:'Bastion Hotel Amsterdam Zuidwest, Schipluidenlaan 12',map:'https://maps.google.com/?q=Bastion+Hotel+Amsterdam+Zuidwest',cost:0,done:false},
+  {id:'h02',day:7,s:[12,0],d:60, t:'🍔 Déjeuner – Foodhallen',c:'meal',res:false,ok:false,
+   notes:'Marché alimentaire couvert dans d\'anciens tramways. Burgers, sushi, pita, fromages, bières artisanales... Très adapté bébé. Dernier repas hollandais!',
+   web:'https://foodhallen.nl/amsterdam',addr:'Bellamyplein 51, 1053 AT Amsterdam',map:'https://maps.google.com/?q=Foodhallen+Amsterdam',cost:35,done:false},
+  {id:'h03',day:7,s:[13,0],d:240,t:'🚶 Dernière balade / Shopping',c:'activity',res:false,ok:false,
+   notes:'Profitez des dernières heures! Shopping de souvenirs (fromage, stroopwafels, tulipes séchées). Balade Negen Straatjes (les 9 rues — boutiques vintage et locales).',
+   web:'',addr:'Negen Straatjes, Amsterdam',map:'https://maps.google.com/?q=De+Negen+Straatjes+Amsterdam',cost:0,done:false},
+  {id:'h04',day:7,s:[17,30],d:60, t:'✈️ Trajet vers l\'aéroport',c:'transport',res:false,ok:false,
+   notes:'Prévoir LARGE avec bébé (2h avant le vol = 19h15).\nTrain depuis Centraal: ~20 min, ~6€/pers.\nOu taxi: ~40-50€.\nVol: 21h15 → Lyon 22h00.',
+   web:'',addr:'Amsterdam Airport Schiphol',map:'https://maps.google.com/?q=Amsterdam+Airport+Schiphol',cost:12,done:false},
+  {id:'h05',day:7,s:[19,30],d:105,t:'✈️ Embarquement & Vol AMS→LYS',c:'transport',res:false,ok:false,
+   notes:'Vol 21h15 → 22h00. Terminal: vérifier sur votre billet.\nArriver à l\'aéroport à 19h30 au plus tard.\nBon voyage! 🌷',
+   web:'',addr:'Amsterdam Airport Schiphol',map:'',cost:0,done:false},
+];
+
+// ═══════════════ STATE ════════════════════
+function loadState(){
+  try{ const s=localStorage.getItem(SK); if(s) return JSON.parse(s); }catch(e){}
+  return {acts:JSON.parse(JSON.stringify(DEFAULT_ACTS)),notes:''};
+}
+function save(){ try{localStorage.setItem(SK,JSON.stringify(st));}catch(e){} updateCosts(); }
+
+let st=loadState(), activeDay=0, editId=null;
+
+// ═══════════════ HELPERS ══════════════════
+const ft=(h,m)=>`${String(h).padStart(2,'0')}h${String(m).padStart(2,'0')}`;
+const et=a=>{ const t=a.s[0]*60+a.s[1]+a.d; return [Math.floor(t/60),t%60]; };
+const topPx=a=>((a.s[0]-SH)+a.s[1]/60)*HH;
+const hPx=a=>Math.max((a.d/60)*HH,22);
+const uid=()=>'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+
+// ═══════════════ INIT ═════════════════════
+function init(){
+  renderTabs(); renderAllDays(); renderCompleted();
+  const ta=document.getElementById('notes-ta');
+  ta.value=st.notes;
+  ta.addEventListener('input',e=>{st.notes=e.target.value;save();});
+  populateDaySel(); setDay(0); updateCosts();
+}
+
+// ═══════════════ TABS ════════════════════
+function renderTabs(){
+  document.getElementById('tabs').innerHTML=DAYS.map(d=>
+    `<div class="tab" id="tab-${d.id}" onclick="setDay(${d.id})">
+      <span class="tab-e">${d.e}</span>
+      <span class="tab-d">${d.date}</span>
+      <span class="tab-n">${d.dn.slice(0,3)}</span>
+    </div>`).join('');
+}
+
+// ═══════════════ DAYS ════════════════════
+function renderAllDays(){
+  document.getElementById('days-wrap').innerHTML=DAYS.map(d=>`
+    <div class="day-col" id="day-${d.id}">
+      <div class="day-hdr">
+        <div class="day-hdr-text">
+          <h2>${d.e} ${d.dn} ${d.date} — ${d.lbl}</h2>
+          <p id="dcost-${d.id}"></p>
+        </div>
+      </div>
+      <div class="grid-wrap" id="grid-${d.id}">
+        ${hourLines()}
+        <div class="drop-line" id="dline-${d.id}">
+          <span class="drop-time-label" id="dtime-${d.id}"></span>
+        </div>
+      </div>
+    </div>`).join('');
+  DAYS.forEach(d=>renderBlocks(d.id));
+}
+
+function hourLines(){
+  let h='';
+  for(let i=SH;i<EH;i++){
+    const top=(i-SH)*HH;
+    h+=`<div class="hr-line" style="top:${top}px"></div>`;
+    h+=`<div class="hr-label" style="top:${top}px">${String(i).padStart(2,'0')}h</div>`;
+  }
+  return h;
+}
+
+function renderBlocks(dayId){
+  const grid=document.getElementById(`grid-${dayId}`); if(!grid)return;
+  grid.querySelectorAll('.blk,.free-day').forEach(x=>x.remove());
+  const acts=st.acts.filter(a=>a.day===dayId&&!a.done);
+  if(!acts.length){
+    const div=document.createElement('div');
+    div.className='free-day';
+    div.innerHTML=`<span class="icon">${dayId===6?'⭐':'📅'}</span>
+      <p>${dayId===6?'Journée libre — profitez!':'Aucune activité'}</p>
+      <small>Appuyez sur + pour ajouter</small>`;
+    grid.appendChild(div);
+  } else {
+    acts.forEach(a=>grid.appendChild(makeBlock(a)));
+  }
+  const cost=acts.reduce((s,a)=>s+(a.cost||0),0);
+  const el=document.getElementById(`dcost-${dayId}`);
+  if(el) el.innerHTML=cost>0?`<span class="day-cost">💰 ~${cost}€</span>`:'';
+}
+
+function makeBlock(a){
+  const div=document.createElement('div');
+  div.className=`blk cat-${a.c}`;
+  div.id=`blk-${a.id}`;
+  div.dataset.id=a.id;
+  const top=topPx(a),h=hPx(a);
+  div.style.cssText=`top:${top}px;height:${h}px`;
+  const e=et(a);
+  const showTime=h>30;
+  let badge='';
+  if(h>36&&a.res) badge=a.ok
+    ?`<div class="blk-ok">✓ Réservé</div>`
+    :`<div class="blk-warn">⚠ À réserver</div>`;
+  div.innerHTML=`<div class="blk-name">${a.t}</div>
+    ${showTime?`<div class="blk-time">${ft(...a.s)} – ${ft(...e)}</div>`:''}
+    ${badge}`;
+
+  let pressTimer=null,pressStartX=0,pressStartY=0;
+
+  div.addEventListener('pointerdown',ev=>{
+    if(ev.target.tagName==='INPUT')return;
+    ev.preventDefault();
+    pressStartX=ev.clientX; pressStartY=ev.clientY;
+    div.classList.add('long-pressing');
+    pressTimer=setTimeout(()=>{pressTimer=null;startDrag(ev,a.id);},320);
+    const pMove=ev2=>{
+      const dx=Math.abs(ev2.clientX-pressStartX),dy=Math.abs(ev2.clientY-pressStartY);
+      if((dx>9||dy>9)&&pressTimer){
+        clearTimeout(pressTimer);pressTimer=null;
+        document.removeEventListener('pointermove',pMove);
+        startDrag(ev2,a.id);
+      }
+    };
+    const pUp=()=>{
+      div.classList.remove('long-pressing');
+      document.removeEventListener('pointermove',pMove);
+      if(pressTimer){clearTimeout(pressTimer);pressTimer=null;openDetail(a.id);}
+    };
+    document.addEventListener('pointermove',pMove,{passive:false});
+    document.addEventListener('pointerup',pUp,{once:true});
+  });
+  return div;
+}
+
+// ═══════════════ DRAG ════════════════════
+let drag=null;
+
+function startDrag(ev,actId){
+  const a=st.acts.find(x=>x.id===actId); if(!a)return;
+  const blk=document.getElementById(`blk-${actId}`);
+  blk.classList.add('dragging');
+  const g=document.getElementById('drag-ghost');
+  g.style.cssText=`display:block;background:${CAT_BG[a.c]};border-color:${CAT_COLOR[a.c]};left:${ev.clientX}px;top:${ev.clientY}px`;
+  g.textContent=a.t;
+  drag={actId,blk,dropH:null,dropM:null};
+  document.addEventListener('pointermove',onMove,{passive:false});
+  document.addEventListener('pointerup',onUp,{once:true});
+}
+
+function onMove(ev){
+  if(!drag)return; ev.preventDefault();
+  const g=document.getElementById('drag-ghost');
+  g.style.left=ev.clientX+'px'; g.style.top=ev.clientY+'px';
+  const compEl=document.getElementById('comp-drop');
+  const cr=compEl.getBoundingClientRect();
+  if(ev.clientY>=cr.top&&ev.clientY<=cr.bottom&&ev.clientX>=cr.left&&ev.clientX<=cr.right){
+    compEl.classList.add('over'); hideLine(); drag.dropH=null; return;
+  }
+  compEl.classList.remove('over');
+  const grid=document.getElementById(`grid-${activeDay}`); if(!grid)return;
+  const gr=grid.getBoundingClientRect();
+  const gy=ev.clientY-gr.top;
+  if(gy>=0&&gy<=gr.height){
+    const totalMin=(gy/HH)*60;
+    let h=Math.floor(totalMin/60)+SH;
+    let m=Math.round((totalMin%60)/SNAP)*SNAP;
+    if(m>=60){h++;m=0;} h=Math.max(SH,Math.min(EH-1,h));
+    showLine(activeDay,h,m); drag.dropH=h; drag.dropM=m;
+  } else { hideLine(); drag.dropH=null; }
+}
+
+function onUp(ev){
+  if(!drag)return;
+  const{actId,blk,dropH,dropM}=drag;
+  document.getElementById('drag-ghost').style.display='none';
+  blk.classList.remove('dragging');
+  document.getElementById('comp-drop').classList.remove('over');
+  hideLine();
+  const cr=document.getElementById('comp-drop').getBoundingClientRect();
+  if(ev.clientY>=cr.top&&ev.clientY<=cr.bottom) markDone(actId);
+  else if(dropH!==null){
+    const a=st.acts.find(x=>x.id===actId);
+    if(a){a.s=[dropH,dropM];save();renderBlocks(a.day);}
+  }
+  document.removeEventListener('pointermove',onMove);
+  drag=null;
+}
+
+function showLine(dayId,h,m){
+  const l=document.getElementById(`dline-${dayId}`);
+  const t=document.getElementById(`dtime-${dayId}`);
+  if(!l)return;
+  l.style.cssText=`top:${((h-SH)+m/60)*HH}px;display:block`;
+  if(t)t.textContent=ft(h,m);
+}
+function hideLine(){ DAYS.forEach(d=>{const l=document.getElementById(`dline-${d.id}`);if(l)l.style.display='none';}); }
+
+// ═══════════════ COMPLETED ═══════════════
+function markDone(id){
+  const a=st.acts.find(x=>x.id===id);if(!a)return;
+  a.done=true;save();renderBlocks(a.day);renderCompleted();
+}
+function restoreAct(id){
+  const a=st.acts.find(x=>x.id===id);if(!a)return;
+  a.done=false;save();renderBlocks(a.day);renderCompleted();
+}
+function renderCompleted(){
+  const c=document.getElementById('comp-drop');
+  const done=st.acts.filter(a=>a.done);
+  if(!done.length){
+    c.innerHTML=`<div class="comp-empty">Glissez les activités terminées ici ↑</div>`;
+  } else {
+    c.innerHTML=done.map(a=>`
+      <div class="comp-item">
+        <span class="comp-name">${DAYS[a.day].e} ${a.t}</span>
+        <button class="comp-restore" onclick="restoreAct('${a.id}')">↩ Restaurer</button>
+      </div>`).join('');
+  }
+}
+
+// ═══════════════ DETAIL MODAL ════════════
+function openDetail(id){
+  const a=st.acts.find(x=>x.id===id);if(!a)return;
+  document.getElementById('d-title').textContent=a.t;
+  const e=et(a);
+  let html=`<span class="cat-pill" style="background:${CAT_BG[a.c]};color:${CAT_COLOR[a.c]}">${CAT_LABEL[a.c]}</span>`;
+  if(a.res){
+    html+=`<div class="res-box ${a.ok?'done':''}">
+      <input type="checkbox" id="rb-${id}" ${a.ok?'checked':''} onchange="toggleOk('${id}',this.checked)">
+      <label for="rb-${id}">${a.ok?'✅ Réservé!':'⚠️ À réserver — important!'}</label>
+    </div>`;
+  }
+  html+=`<div class="d-row"><span class="d-icon">🕐</span>
+    <span class="d-text"><strong>${ft(...a.s)} – ${ft(...e)}</strong> &nbsp;·&nbsp; ${a.d} min</span></div>`;
+  if(a.cost>0) html+=`<div class="d-row"><span class="d-icon">💰</span><span class="d-text">~${a.cost}€ estimé</span></div>`;
+  if(a.notes)  html+=`<div class="d-row"><span class="d-icon">📝</span><span class="d-text">${a.notes.replace(/\n/g,'<br>')}</span></div>`;
+  if(a.web)    html+=`<div class="d-row"><span class="d-icon">🌐</span><a class="d-text d-link" href="${a.web}" target="_blank">${a.web.replace(/https?:\/\//,'').split('/')[0]} ↗</a></div>`;
+  if(a.addr)   html+=`<div class="d-row"><span class="d-icon">📍</span><span class="d-text">${a.addr}${a.map?`<br><a class="d-link" href="${a.map}" target="_blank">Voir sur Maps ↗</a>`:''}</span></div>`;
+  html+=`
+    <button class="btn btn-primary" style="margin-top:14px" onclick="openEdit('${id}')">✏️ Modifier</button>
+    <button class="btn btn-success" onclick="markDone('${id}');closeMod('d-modal-bg')">✅ Marquer comme terminée</button>
+    <button class="btn btn-danger" onclick="delAct('${id}')">🗑 Supprimer</button>`;
+  document.getElementById('d-body').innerHTML=html;
+  document.getElementById('d-modal-bg').classList.add('open');
+}
+
+function toggleOk(id,checked){
+  const a=st.acts.find(x=>x.id===id);if(!a)return;
+  a.ok=checked;save();renderBlocks(a.day);
+  const box=document.getElementById('rb-'+id)?.closest('.res-box');
+  if(box){box.classList.toggle('done',checked);box.querySelector('label').textContent=checked?'✅ Réservé!':'⚠️ À réserver — important!';}
+}
+
+// ═══════════════ ADD/EDIT MODAL ══════════
+function populateDaySel(){
+  document.getElementById('f-day').innerHTML=DAYS.map(d=>
+    `<option value="${d.id}">${d.e} ${d.dn} ${d.date}</option>`).join('');
+}
+
+function openAddModal(preDay){
+  editId=null;
+  document.getElementById('e-modal-title').textContent='Nouvelle activité';
+  ['f-title','f-notes','f-web','f-addr','f-map'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-day').value=preDay??activeDay;
+  document.getElementById('f-cat').value='activity';
+  document.getElementById('f-start').value='10:00';
+  document.getElementById('f-dur').value='60';
+  document.getElementById('f-cost').value='';
+  document.getElementById('f-res').checked=false;
+  closeMod('d-modal-bg');
+  document.getElementById('e-modal-bg').classList.add('open');
+}
+
+function openEdit(id){
+  const a=st.acts.find(x=>x.id===id);if(!a)return;
+  editId=id;
+  document.getElementById('e-modal-title').textContent='Modifier activité';
+  document.getElementById('f-title').value=a.t;
+  document.getElementById('f-day').value=a.day;
+  document.getElementById('f-cat').value=a.c;
+  document.getElementById('f-start').value=ft(...a.s).replace('h',':');
+  document.getElementById('f-dur').value=a.d;
+  document.getElementById('f-notes').value=a.notes;
+  document.getElementById('f-web').value=a.web;
+  document.getElementById('f-addr').value=a.addr;
+  document.getElementById('f-map').value=a.map||'';
+  document.getElementById('f-cost').value=a.cost;
+  document.getElementById('f-res').checked=a.res;
+  closeMod('d-modal-bg');
+  document.getElementById('e-modal-bg').classList.add('open');
+}
+
+function saveAct(){
+  const title=document.getElementById('f-title').value.trim();
+  if(!title){document.getElementById('f-title').focus();return;}
+  const sv=document.getElementById('f-start').value;
+  const [sh,sm]=sv.split(':').map(Number);
+  const dur=parseInt(document.getElementById('f-dur').value)||60;
+  if(editId){
+    const a=st.acts.find(x=>x.id===editId);
+    if(a){
+      const oldDay=a.day;
+      a.t=title;a.day=+document.getElementById('f-day').value;
+      a.c=document.getElementById('f-cat').value;
+      a.s=[sh,sm];a.d=dur;
+      a.notes=document.getElementById('f-notes').value;
+      a.web=document.getElementById('f-web').value;
+      a.addr=document.getElementById('f-addr').value;
+      a.map=document.getElementById('f-map').value;
+      a.cost=parseFloat(document.getElementById('f-cost').value)||0;
+      a.res=document.getElementById('f-res').checked;
+      save();renderBlocks(oldDay);if(a.day!==oldDay)renderBlocks(a.day);
+    }
+  } else {
+    const na={id:uid(),t:title,day:+document.getElementById('f-day').value,
+      c:document.getElementById('f-cat').value,s:[sh,sm],d:dur,
+      notes:document.getElementById('f-notes').value,
+      web:document.getElementById('f-web').value,
+      addr:document.getElementById('f-addr').value,
+      map:document.getElementById('f-map').value,
+      cost:parseFloat(document.getElementById('f-cost').value)||0,
+      res:document.getElementById('f-res').checked,ok:false,done:false};
+    st.acts.push(na);
+    save();renderBlocks(na.day);
+  }
+  closeMod('e-modal-bg');
+}
+
+function delAct(id){
+  if(!confirm('Supprimer cette activité?'))return;
+  const a=st.acts.find(x=>x.id===id);if(!a)return;
+  const day=a.day;
+  st.acts=st.acts.filter(x=>x.id!==id);
+  save();renderBlocks(day);closeMod('d-modal-bg');
+}
+
+// ═══════════════ NAV ══════════════════════
+function setDay(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.day-col').forEach(c=>c.classList.remove('active'));
+  document.getElementById(`tab-${id}`)?.classList.add('active');
+  document.getElementById(`day-${id}`)?.classList.add('active');
+  document.getElementById(`tab-${id}`)?.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  activeDay=id;
+}
+
+function toggleSec(bodyId,togId){
+  const b=document.getElementById(bodyId),t=document.getElementById(togId);
+  const hidden=b.classList.toggle('hidden');
+  if(t)t.classList.toggle('closed',hidden);
+}
+
+function closeMod(id){document.getElementById(id).classList.remove('open');}
+
+function updateCosts(){
+  const total=st.acts.filter(a=>!a.done).reduce((s,a)=>s+(a.cost||0),0);
+  const el=document.getElementById('total-cost');
+  if(el)el.textContent=`~${total}€ activités`;
+}
+
+function openResetModal(){document.getElementById('s-modal-bg').classList.add('open');}
+
+function confirmReset(){
+  if(!confirm('Réinitialiser tout l\'itinéraire?\nToutes vos modifications seront perdues.'))return;
+  localStorage.removeItem(SK);location.reload();
+}
+
+init();
+</script>
+</body>
+</html>
