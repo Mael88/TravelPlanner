@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Corse 2026 — Golfe du Valinco</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0C1A1A;--surface:#122020;--border:#1E4040;--border-soft:#183030;
+  --text:#F0FAF8;--muted:#7BBFB5;--faint:#4A8A80;
+  --blue:#0D9488;--blue-bg:#0A2525;--orange:#D97706;--orange-bg:#2D2006;
+  --green:#16A34A;--green-bg:#0A2613;--purple:#A21CAF;--purple-bg:#2D0B33;
+  --brown:#B45309;--brown-bg:#2D1F06;--HH:55px;--R:10px;--font:'Sora',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent}
+.hdr{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,color-mix(in srgb,var(--blue) 22%,transparent),var(--surface) 60%);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px}
+.hdr-logo{font-size:22px}.hdr-info{flex:1}
+.hdr-title{font-size:15px;font-weight:800;letter-spacing:-.3px;color:var(--text)}
+.hdr-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.btn-icon{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:var(--font);color:var(--muted)}
+.tabs{display:flex;overflow-x:auto;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:49px;z-index:99;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:7px 13px 8px;cursor:pointer;border-bottom:2px solid transparent;text-align:center;min-width:66px;transition:all .15s}
+.tab.on{border-bottom-color:var(--blue);color:var(--blue)}
+.tab-e{font-size:16px;display:block;line-height:1.3}.tab-d{font-size:10px;font-weight:700;display:block}.tab-n{font-size:9px;color:var(--faint);display:block}
+.legend{display:flex;flex-wrap:wrap;gap:5px 10px;padding:7px 14px;background:var(--surface);border-bottom:1px solid var(--border-soft)}
+.lg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}.lgd{width:7px;height:7px;border-radius:2px}.hint{margin-left:auto;font-size:9px;color:var(--faint)}
+.opt-banner{background:color-mix(in srgb,var(--brown) 12%,transparent);border-bottom:1px solid color-mix(in srgb,var(--brown) 30%,transparent);padding:8px 14px;font-size:10px;color:#FBBF77;line-height:1.7}
+.day{display:none}.day.on{display:block}
+.day-hdr{background:var(--surface);padding:9px 16px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center}
+.day-hdr h2{font-size:13px;font-weight:700;flex:1;color:var(--text)}
+.cost-pill{background:var(--green-bg);color:var(--green);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700}
+.grid{position:relative;padding-left:42px;min-height:calc(var(--HH)*16);background:var(--bg)}
+.hl{position:absolute;left:42px;right:0;height:var(--HH);border-top:1px solid var(--border-soft)}.hl:nth-child(even){background:rgba(255,255,255,.015)}
+.hlb{position:absolute;left:0;width:38px;height:var(--HH);display:flex;align-items:flex-start;justify-content:flex-end;padding:5px 6px 0;font-size:9px;font-weight:600;color:var(--faint)}
+.drop-line{display:none;position:absolute;left:42px;right:0;height:2px;background:var(--blue);z-index:20;pointer-events:none}
+.drop-line::before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--blue)}
+.drop-label{position:absolute;left:-41px;top:-9px;width:38px;background:var(--blue);color:#fff;border-radius:4px;padding:1px 3px;font-size:9px;font-weight:700;text-align:center}
+.empty-day{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--faint);pointer-events:none}
+.empty-day .ei{font-size:30px}.empty-day p{font-size:13px;font-weight:600}.empty-day small{font-size:11px}
+.blk{position:absolute;left:46px;right:6px;border-radius:var(--R);padding:5px 8px;cursor:pointer;border-left:3px solid;overflow:hidden;user-select:none;-webkit-user-select:none;box-shadow:0 1px 3px rgba(0,0,0,.25);z-index:10;touch-action:auto}
+.blk.dragging{opacity:.25}.blk.pressing{box-shadow:0 4px 16px rgba(0,0,0,.5);transform:scale(1.015)}
+.blk-name{font-size:11px;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.blk-time{font-size:9px;color:var(--muted);margin-top:1px;font-weight:500}
+.blk-badge{display:inline-flex;align-items:center;margin-top:2px;font-size:8px;font-weight:700;border-radius:4px;padding:1px 4px}
+.badge-warn{background:color-mix(in srgb,var(--orange) 25%,transparent);color:#FBBF77}
+.badge-ok{background:color-mix(in srgb,var(--green) 22%,transparent);color:#86EFAC}
+.cat-activity{background:var(--blue-bg);border-color:var(--blue)}.cat-transport{background:var(--orange-bg);border-color:var(--orange)}
+.cat-meal{background:var(--green-bg);border-color:var(--green)}.cat-rest{background:var(--purple-bg);border-color:var(--purple)}.cat-optional{background:var(--brown-bg);border-color:var(--brown)}
+#ghost{display:none;position:fixed;z-index:500;pointer-events:none;border-radius:var(--R);border-left:3px solid;padding:6px 10px;font-family:var(--font);font-size:11px;font-weight:700;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 6px 24px rgba(0,0,0,.5);transform:translate(-50%,-110%);color:var(--text)}
+.section{margin:12px;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden}
+.sec-hdr{padding:12px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;border-bottom:1px solid var(--border-soft)}
+.sec-hdr h3{font-size:13px;font-weight:700;flex:1;color:var(--text)}
+.sec-arr{font-size:11px;color:var(--faint);transition:transform .2s}.sec-arr.shut{transform:rotate(-90deg)}
+.sec-body{padding:12px 14px}.sec-body.hide{display:none}
+.comp-zone{min-height:52px;border:2px dashed var(--border);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;transition:all .15s}
+.comp-zone.over{border-color:var(--blue);background:var(--blue-bg)}
+.comp-empty{text-align:center;padding:12px;font-size:11px;color:var(--faint)}
+.comp-row{background:var(--bg);border-radius:7px;padding:6px 10px;display:flex;align-items:center;gap:8px}
+.comp-name{font-size:11px;color:var(--faint);text-decoration:line-through;flex:1}
+.comp-btn{font-size:10px;font-weight:700;color:var(--blue);padding:3px 8px;background:var(--blue-bg);border-radius:5px;cursor:pointer;border:none;font-family:var(--font)}
+.notes-ta{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:var(--font);font-size:13px;line-height:1.55;resize:vertical;min-height:100px;background:var(--bg);color:var(--text);outline:none}
+.notes-ta:focus{border-color:var(--blue);background:var(--surface)}
+.fab{position:fixed;bottom:22px;right:22px;width:52px;height:52px;border-radius:50%;background:var(--blue);color:#fff;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 20px color-mix(in srgb,var(--blue) 50%,transparent);z-index:98;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.93)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:flex-end;backdrop-filter:blur(3px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto;animation:up .22s cubic-bezier(.32,.72,0,1);border:1px solid var(--border);border-bottom:none}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hdr{position:sticky;top:0;background:var(--surface);padding:14px 16px 12px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px;z-index:5}
+.modal-hdr h3{font-size:15px;font-weight:800;flex:1;letter-spacing:-.3px;color:var(--text)}
+.modal-x{width:28px;height:28px;border-radius:50%;background:color-mix(in srgb,var(--text) 10%,transparent);border:none;cursor:pointer;font-size:17px;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.modal-body{padding:14px 16px 12px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:var(--font);font-size:14px;color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+.field textarea{resize:vertical;min-height:70px;line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check-row{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.check-row input{width:17px;height:17px;cursor:pointer;accent-color:var(--blue)}.check-row label{font-size:13px;cursor:pointer;color:var(--text)}
+.cat-badge{display:inline-block;border-radius:20px;padding:3px 11px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+.res-row{display:flex;align-items:center;gap:10px;background:var(--orange-bg);border:1px solid color-mix(in srgb,var(--orange) 40%,transparent);border-radius:9px;padding:10px 12px;margin-bottom:11px}
+.res-row.done{background:var(--green-bg);border-color:color-mix(in srgb,var(--green) 40%,transparent)}
+.res-row input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--blue)}
+.res-row label{font-size:13px;font-weight:600;cursor:pointer;flex:1;color:var(--text)}
+.drow{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--border-soft)}.drow:last-of-type{border-bottom:none}
+.drow-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.drow-text{font-size:13px;line-height:1.55;color:var(--text);flex:1;word-break:break-word}
+.drow-link{color:var(--blue);text-decoration:none;font-weight:600}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:8px}
+.btn:active{opacity:.87}.btn-blue{background:var(--blue);color:#fff}
+.btn-green{background:var(--green-bg);color:var(--green);border:1px solid color-mix(in srgb,var(--green) 35%,transparent)}
+.btn-red{background:color-mix(in srgb,#DC2626 12%,transparent);color:#FCA5A5;border:1px solid color-mix(in srgb,#DC2626 35%,transparent)}
+.btn-grey{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;font-family:var(--font);opacity:0;transition:all .3s;pointer-events:none;z-index:300;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.share-code-box{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:monospace;font-size:11px;word-break:break-all;max-height:120px;overflow-y:auto;line-height:1.5;margin-bottom:10px;color:var(--text)}
+.share-info{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px}.share-info strong{color:var(--text)}
+.share-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:9px;overflow:hidden;border:1px solid var(--border)}
+.share-tab{flex:1;padding:10px;text-align:center;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;background:var(--surface);border:none;color:var(--muted);transition:all .15s}
+.share-tab.on{background:var(--blue);color:#fff}.share-section{display:none}.share-section.on{display:block}
+.drag-mode-toast{position:fixed;top:55px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--font);z-index:300;box-shadow:0 4px 16px color-mix(in srgb,var(--blue) 50%,transparent);display:none;animation:fadeInDown .2s}
+.drag-mode-toast.show{display:block}
+@keyframes fadeInDown{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-logo" id="hdr-logo">🏖️</div>
+  <div class="hdr-info">
+    <div class="hdr-title" id="hdr-title">Corse 2026</div>
+    <div class="hdr-sub"><span id="hdr-sub-text">06–14 Juin · Golfe du Valinco · 5 pers.</span> · <span id="total-cost"></span></div>
+  </div>
+  <button class="btn-icon" id="btn-share">📤</button>
+  <button class="btn-icon" id="btn-settings">⚙</button>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="legend">
+  <div class="lg"><div class="lgd" style="background:var(--blue)"></div>Activité</div>
+  <div class="lg"><div class="lgd" style="background:var(--orange)"></div>Transport</div>
+  <div class="lg"><div class="lgd" style="background:var(--green)"></div>Repas</div>
+  <div class="lg"><div class="lgd" style="background:var(--purple)"></div>Repos</div>
+  <div class="lg"><div class="lgd" style="background:var(--brown)"></div>Alternative</div>
+  <div class="hint">Appui long = déplacer</div>
+</div>
+<div class="opt-banner">
+  🟤 <strong>Blocs marron = ALTERNATIVE À [nom du bloc qu'ils remplacent]</strong> — Lisez les deux, gardez votre préféré, supprimez l'autre.<br>
+  📅 Structure fixe chaque jour : 🏖️ Plage 9h–12h30 · 🍽️ Déjeuner · 👶 Sieste · 🏛️ Activité PM · 🍷 Dîner 20h
+</div>
+<div id="days-wrap"></div>
+<div class="section">
+  <div class="sec-hdr" id="comp-hdr"><h3>✓ Activités terminées</h3><span class="sec-arr" id="comp-arr">▾</span></div>
+  <div class="sec-body" id="comp-body"><div class="comp-zone" id="comp-zone"></div></div>
+</div>
+<div class="section" style="margin-bottom:80px">
+  <div class="sec-hdr" id="notes-hdr"><h3>📋 Notes & Infos pratiques</h3><span class="sec-arr" id="notes-arr">▾</span></div>
+  <div class="sec-body" id="notes-body">
+    <textarea class="notes-ta" id="notes-ta" rows="9" placeholder="🏠 Casa Gelsominu n°62 — Arghja Di U Farru 12, 20140 Serra di Ferro&#10;🔑 Code portail résidence : 0204A&#10;📧 Renaud : renaud.fiedler@sfr.fr · Tel : +498962826568&#10;🛥️ Ferry retour : 14/06 départ 9h00 Ajaccio · Partir maison 7h30 MAX&#10;💶 À payer arrivée (espèces) : ménage 75€ + linge 30€ = 105€&#10;&#10;👶 Lit bébé + rehausseur chaise déjà sur place !&#10;🥖 Boulanger parking : 8h30-9h00 sf lundi&#10;🛒 Marché Serra-di-Ferro : vendredi 9h-13h (5 min à pied)&#10;🏊 Piscine chauffée ✅ | Laverie : 06 71 68 64 27&#10;&#10;🍕 U San Matteu (pizzas village) : 04 95 74 07 81&#10;🎸 U San Petru (trad. + polyphonie vendredi) : 04 95 26 45 32&#10;⛵ Bartoli Marine (bateaux Porto Pollo) : 06 45 36 87 18&#10;🐴 L'Orca (chevaux) : 06 15 68 12 44&#10;🤿 Porto Pollo Diving : 06 85 41 93 94&#10;&#10;🚨 SAMU 15 · Pompiers 18 · Hôpital Ajaccio : +33 4 95 29 90 90"></textarea>
+  </div>
+</div>
+<button class="fab" id="fab">+</button>
+<div id="ghost"></div>
+<div class="toast" id="toast"></div>
+<div class="drag-mode-toast" id="drag-toast">📋 Mode déplacement — glissez vers un horaire</div>
+
+<div class="modal-bg" id="mod-detail">
+  <div class="modal"><div class="modal-hdr"><h3 id="det-title">Activité</h3><button class="modal-x" id="det-close">×</button></div><div class="modal-body" id="det-body"></div></div>
+</div>
+<div class="modal-bg" id="mod-edit">
+  <div class="modal"><div class="modal-hdr"><h3 id="edit-title">Nouvelle activité</h3><button class="modal-x" id="edit-close">×</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Titre</label><input id="f-name" type="text" placeholder="Nom de l'activité"></div>
+      <div class="row2">
+        <div class="field"><label>Jour</label><select id="f-day"></select></div>
+        <div class="field"><label>Catégorie</label><select id="f-cat"><option value="activity">Activité</option><option value="transport">Transport</option><option value="meal">Repas</option><option value="rest">Repos</option><option value="optional">Alternative</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Heure début</label><input id="f-start" type="time" value="10:00"></div>
+        <div class="field"><label>Durée (min)</label><input id="f-dur" type="number" placeholder="60" min="15" step="15"></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Infos pratiques, prix..."></textarea></div>
+      <div class="field"><label>Site web</label><input id="f-web" type="url" placeholder="https://..."></div>
+      <div class="field"><label>Adresse</label><input id="f-addr" type="text" placeholder="Adresse ou lieu"></div>
+      <div class="field"><label>Lien Google Maps</label><input id="f-map" type="url" placeholder="https://maps.google.com/..."></div>
+      <div class="field"><label>Coût estimé (€)</label><input id="f-cost" type="number" placeholder="0" min="0"></div>
+      <div class="check-row"><input id="f-res" type="checkbox"><label for="f-res">Nécessite une réservation</label></div>
+      <button class="btn btn-blue" id="save-btn">Enregistrer</button>
+      <button class="btn btn-grey" id="edit-cancel" style="margin-top:6px">Annuler</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="mod-settings">
+  <div class="modal"><div class="modal-hdr"><h3>Paramètres</h3><button class="modal-x" id="settings-close">×</button></div>
+    <div class="modal-body"><p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Modifications sauvegardées automatiquement dans votre navigateur.</p><button class="btn btn-red" id="reset-btn">Réinitialiser l'itinéraire</button><button class="btn btn-grey" id="settings-cancel" style="margin-top:8px">Fermer</button></div>
+  </div>
+</div>
+<div class="modal-bg" id="mod-share">
+  <div class="modal"><div class="modal-hdr"><h3>📤 Partager l'itinéraire</h3><button class="modal-x" id="share-close">×</button></div>
+    <div class="modal-body">
+      <div class="share-tabs"><button class="share-tab on" id="stab-export">Exporter</button><button class="share-tab" id="stab-import">Importer</button></div>
+      <div class="share-section on" id="sec-export"><p class="share-info"><strong>Envoyez ce code</strong> par WhatsApp ou iMessage.<br>Les autres participants pourront l'importer.</p><div class="share-code-box" id="export-code"></div><button class="btn btn-blue" id="copy-code-btn">📋 Copier le code</button></div>
+      <div class="share-section" id="sec-import"><p class="share-info"><strong>Collez le code reçu</strong> pour synchroniser.<br>⚠️ Remplace votre version actuelle.</p><div class="field"><label>Code de partage</label><textarea id="import-ta" placeholder="Collez le code ici..." style="min-height:90px;font-family:monospace;font-size:11px"></textarea></div><button class="btn btn-blue" id="import-btn">📥 Importer et appliquer</button></div>
+      <button class="btn btn-grey" id="share-cancel" style="margin-top:8px">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var TRIP_TITLE="Corse 2026 🏖️",TRIP_SUBTITLE="06–14 Juin · Golfe du Valinco · 5 pers.",TRIP_LOGO="🏖️",STORAGE_KEY="trip-corse-2026-v2",SHARE_PREFIX="CORSE26B:";
+var DAY_DATA=[
+  [0,"Sam 06/06","Arrivée",      "Ferry → Serra di Ferro"],
+  [1,"Dim 07/06","Porto-Pollo",  "Plage + balade Propriano + bateau"],
+  [2,"Lun 08/06","Cupabia",      "Grande plage + piscine"],
+  [3,"Mar 09/06","Silver Beach", "Plage Pietrosella + Ferme I Ricci"],
+  [4,"Mer 10/06","Sanguinaires", "Plage + croisière Ajaccio"],
+  [5,"Jeu 11/06","Bonifacio",    "Rondinara + citadelle"],
+  [6,"Ven 12/06","Marché+Plage", "Marché local + plage + U San Petru"],
+  [7,"Sam 13/06","Dernière J.",  "Dernière plage + emplettes"],
+  [8,"Dim 14/06","Départ",       "Retour Toulon 9h00"]
+]
+var DAY_EM=["ferry","beach","sun","beach","boat","castle","market","star","plane"];
+var EMOJI_MAP={plane:"✈️",city:"🏙️",star:"⭐",home:"🏠",beach:"🏖️",boat:"⛵",mountain:"🏔️",food:"🍽️",drink:"🍷",coffee:"☕",hike:"🥾",museum:"🏛️",castle:"🏰",park:"🌳",baby:"👶",car:"🚗",ferry:"🛥️",flag:"🚩",sun:"☀️",moon:"🌙",market:"🛒",forest:"🌲",flower:"🌸"};
+
+// ─────────────────────────────────────────────────────────────────────
+// STRUCTURE JOURNÉE TYPE :
+//  09h00–12h30 → 🏖️ PLAGE (tous les jours sauf arrivée/départ)
+//  12h30–14h00 → 🍽️ Déjeuner
+//  14h00–15h30 → 👶 Sieste bébé
+//  15h30–18h30 → 🏛️ Activité PM  ← c'est ici que sont les alternatives
+//  20h00–21h30 → 🍷 Dîner
+//
+// Blocs marron = ALTERNATIVE au bloc du même créneau horaire.
+// Appuyez sur chaque bloc pour lire le détail, choisissez, supprimez l'autre.
+// ─────────────────────────────────────────────────────────────────────
+var ACTS_DEFAULT=[
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 0 — Sam 06/06 — ARRIVÉE
+  // ══════════════════════════════════════════════════════
+  {uid:"d0_01",dayId:0,startHour:18,startMin:30,duration:45,title:"🚢 Arrivée port d'Ajaccio",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Débarquement Corsica Ferries. Récupérez la voiture dans le garage du ferry. Pièces d'identité accessibles. Suivez la signalisation de sortie.",
+   website:"",address:"Port d'Ajaccio, 20000 Ajaccio",mapsUrl:"https://maps.google.com/?q=Port+Ajaccio"},
+
+  {uid:"d0_02",dayId:0,startHour:19,startMin:15,duration:65,title:"🚗 Route Ajaccio → Serra di Ferro (~1h)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"D81 direction Propriano puis D757 direction Porto-Pollo. Routes corses étroites, roulez lentement surtout de nuit. GPS indispensable. Code portail résidence : 0204A.",
+   website:"",address:"Arghja Di U Farru 12, 20140 Serra di Ferro",mapsUrl:"https://maps.google.com/?q=Serra+di+Ferro+Corse+du+Sud"},
+
+  {uid:"d0_03",dayId:0,startHour:20,startMin:20,duration:40,title:"🏠 Installation maison",
+   category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Installez-vous. Lit bébé + rehausseur chaise déjà sur place ! Vérifiez les équipements. Boulanger demain matin au parking couvert 8h30-9h (sauf lundi).",
+   website:"",address:"Casa Gelsominu n°62, Résidence Alba Rossa",mapsUrl:""},
+
+  {uid:"d0_04",dayId:0,startHour:21,startMin:0,duration:75,title:"🍽️ Dîner maison — soir d'arrivée",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:25,
+   info:"Dîner simple. Prévoyez provisions depuis le continent ou Super U Propriano avant d'arriver. À payer à l'arrivée : ménage 75€ + (linge 30€ si besoin) = espèces.",
+   website:"",address:"",mapsUrl:""},
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 1 — Dim 07/06 — PORTO-POLLO + BATEAU
+  // ══════════════════════════════════════════════════════
+  {uid:"d1_01",dayId:1,startHour:9,startMin:0,duration:210,title:"🏖️ Plage de Porto-Pollo",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:15,
+   info:"Votre plage de proximité — 5 min de la maison ! Eau très peu profonde, fond sableux, idéale pour bébé. Paillotes sur place. Pas besoin d'arriver tôt.",
+   website:"",address:"Plage de Porto-Pollo, 20140 Serra-di-Ferro",mapsUrl:"https://maps.google.com/?q=Porto+Pollo+Beach"},
+
+  {uid:"d1_02",dayId:1,startHour:12,startMin:30,duration:75,title:"🍽️ Déjeuner paillote Porto-Pollo",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:75,
+   info:"Paillotes directement sur la plage. ~15-20€/adulte, chaise haute disponible.",
+   website:"",address:"Porto-Pollo, Serra-di-Ferro",mapsUrl:""},
+
+  {uid:"d1_03",dayId:1,startHour:14,startMin:0,duration:90,title:"👶 Sieste bébé (maison 5 min)",
+   category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Retour rapide à la maison pour la sieste. Terrasse + premier rosé corse pour les adultes ☀️",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d1_04",dayId:1,startHour:15,startMin:30,duration:60,title:"🌊 Balade port de Propriano",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Promenade sur le port : maisons colorées, bateaux de pêche, terrasses. Poussette facile sur le front de mer. Montez à l'église Notre-Dame de la Miséricorde pour la vue sur le golfe.",
+   website:"",address:"Port de Propriano, 20110 Propriano",mapsUrl:"https://maps.google.com/?q=Port+Propriano+Corse"},
+
+  {uid:"d1_05",dayId:1,startHour:16,startMin:30,duration:120,title:"⭐ ⛵ Balade en bateau — Golfe du Valinco",
+   category:"activity",needRes:true,isReserved:false,isDone:false,budget:150,
+   info:"Excursion en bateau depuis Propriano : criques sauvages inaccessibles en voiture, snorkeling, dauphins possibles ! ~2h. Bébé avec gilet. Contacter Bartoli Marine (Porto Pollo, 10 min) : 06 45 36 87 18 / bartoli-marine.fr — RÉSERVER MAINTENANT !",
+   website:"http://www.bartoli-marine.fr",address:"Port de Propriano ou Porto Pollo Marina",mapsUrl:"https://maps.google.com/?q=Port+Propriano+Corse"},
+
+  {uid:"d1_06",dayId:1,startHour:20,startMin:0,duration:90,title:"🍷 Dîner à Propriano",
+   category:"meal",needRes:true,isReserved:false,isDone:false,budget:110,
+   info:"Dîner pour 5 à Propriano. Recommandés : A Cantina (corse authentique), Le Lido (vue baie), U Castellu. Ou retour village : U San Matteu pizzeria (5 min à pied, 04 95 74 07 81). À RÉSERVER !",
+   website:"",address:"Propriano, 20110 Corse du Sud",mapsUrl:""},
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 2 — Lun 08/06 — CUPABIA + PISCINE
+  // ══════════════════════════════════════════════════════
+  {uid:"d2_00",dayId:2,startHour:8,startMin:45,duration:30,title:"🚗 Départ matinal → Cupabia (arriver avant 9h !)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Partir avant 9h pour avoir une place de parking. Préparez le pique-nique la veille ! Parasol, tapis, jouets bébé. Pas de restauration à Cupabia.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d2_01",dayId:2,startHour:9,startMin:15,duration:195,title:"⭐ 🏖️ Plage de Cupabia",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"La plus belle plage du secteur ! Eau turquoise cristalline, sable blanc très fin, pente douce parfaite pour bébé. Paillote Waïkiki côté nord. Snorkeling excellent côté rochers. Accessible aussi à pied depuis la résidence (sentier vert, 25 min descente).",
+   website:"",address:"Plage de Cupabia, Serra-di-Ferro",mapsUrl:"https://maps.google.com/?q=Plage+de+Cupabia+Corse"},
+
+  {uid:"d2_02",dayId:2,startHour:12,startMin:30,duration:75,title:"🥗 Pique-nique sur la plage",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:15,
+   info:"Pique-nique préparé à la maison — pas de restaurant à Cupabia. Produits corses : charcuterie, fromage, fruits, pain.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d2_03",dayId:2,startHour:14,startMin:0,duration:90,title:"👶 Sieste bébé (ombre ou voiture)",
+   category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Sieste à l'ombre ou dans la voiture climatisée. Les adultes profitent encore de la mer ou font du snorkeling.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d2_04",dayId:2,startHour:15,startMin:30,duration:150,title:"🏊 Piscine de la résidence + détente",
+   category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Piscine chauffée disponible d'avril à octobre ✅ Retour à la résidence. Après-midi relax : piscine, terrasse, farniente. Journée sans voiture, parfait pour recharger les batteries !",
+   website:"",address:"Résidence Alba Rossa, Serra di Ferro",mapsUrl:""},
+
+  {uid:"d2_05",dayId:2,startHour:20,startMin:0,duration:90,title:"🍽️ Dîner maison",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:30,
+   info:"Dîner tranquille à la maison. Charcuterie corse, fromage, pain grillé, rosé Nielluccio.",
+   website:"",address:"",mapsUrl:""},
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 3 — Mar 09/06 — SILVER BEACH + FERME I RICCI
+  // ══════════════════════════════════════════════════════
+  {uid:"d3_00",dayId:3,startHour:8,startMin:30,duration:45,title:"🚗 Route → Silver Beach Pietrosella (40 min)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"40 min depuis Serra di Ferro. Sur la route de Bastelicaccia (ferme I Ricci). Logistique parfaite : plage le matin, déjeuner La Plage d'Argent, puis I Ricci à 13h30 (20 min de la plage).",
+   website:"",address:"Pietrosella, Corse du Sud",mapsUrl:""},
+
+  {uid:"d3_01",dayId:3,startHour:9,startMin:15,duration:150,title:"⭐ 🏖️ Silver Beach (Mare é Sole) — Pietrosella",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Recommandée par votre hôte Renaud comme sa plage préférée ! Sable blanc très fin, eau cristalline idéale enfants. Sentiers nature depuis les parkings (Myrtle Trail 2 km, eucalyptus 3 km). Déjeuner au restaurant 'La Plage d'Argent' sur place — RÉSERVER !",
+   website:"",address:"Plage Mare é Sole, Pietrosella",mapsUrl:"https://maps.google.com/?q=Plage+Mare+e+Sole+Pietrosella+Corse"},
+
+  {uid:"d3_02",dayId:3,startHour:12,startMin:0,duration:90,title:"⭐ 🍽️ La Plage d'Argent — Pietrosella",
+   category:"meal",needRes:true,isReserved:false,isDone:false,budget:110,
+   info:"Restaurant directement sur la plage, recommandé par Renaud. Poisson frais exceptionnel, cuisine de qualité, service professionnel. RÉSERVER ABSOLUMENT pour 5 ! Puis 20 min de route vers I Ricci.",
+   website:"",address:"Plage de Mare é Sole, Pietrosella",mapsUrl:""},
+
+  {uid:"d3_03",dayId:3,startHour:13,startMin:30,duration:90,title:"🐐 Ferme pédagogique I Ricci — Bastelicaccia",
+   category:"activity",needRes:true,isReserved:false,isDone:false,budget:30,
+   info:"Ferme pédagogique à 15 min d'Ajaccio. Chèvres, moutons, chevaux, poneys, chats, chiens et un lama ! Visite guidée ~45 min. Idéale pour un bébé de 17 mois — contact direct avec les animaux. Tel : 06 22 38 39 18 · asso-herissons@orange.fr — RÉSERVER sur RDV !",
+   website:"",address:"I Ricci, Bastelicaccia, 20129 Ajaccio",mapsUrl:"https://maps.google.com/?q=Ferme+pedagogique+I+Ricci+Bastelicaccia"},
+
+  {uid:"d3_04",dayId:3,startHour:15,startMin:0,duration:60,title:"🚗 Retour → Serra di Ferro (~45 min)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"~45 min depuis Bastelicaccia. Arrivée vers 16h. Bébé peut dormir dans la voiture.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d3_05",dayId:3,startHour:20,startMin:0,duration:90,title:"🍽️ Dîner maison",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:30,
+   info:"Longue journée — dîner tranquille à la maison. Racontez-vous les anecdotes de la ferme !",
+   website:"",address:"",mapsUrl:""},
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 4 — Mer 10/06 — PLAGE LOCALE + SANGUINAIRES
+  // ══════════════════════════════════════════════════════
+  {uid:"d4_01",dayId:4,startHour:9,startMin:0,duration:210,title:"⭐ 🏖️ Plage de Cupabia",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Deuxième passage à Cupabia — l'eau turquoise mérite bien deux visites ! Arrivez avant 9h pour le parking. Pique-nique sur place (pas de resto). Snorkeling côté rochers pour les adultes pendant sieste bébé. Départ vers Ajaccio à 12h30 pour les Sanguinaires.",
+   website:"",address:"Plage de Cupabia, Serra-di-Ferro",mapsUrl:"https://maps.google.com/?q=Plage+de+Cupabia+Corse"},
+
+  {uid:"d4_02",dayId:4,startHour:12,startMin:30,duration:60,title:"🍽️ Déjeuner rapide + route Ajaccio",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:30,
+   info:"Déjeuner léger à la maison ou en route. Départ vers Ajaccio à 12h30. Arrivée au port d'Ajaccio vers 13h30.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d4_03",dayId:4,startHour:13,startMin:30,duration:60,title:"🚗 Route → Port d'Ajaccio (1h)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"~1h depuis Serra di Ferro. Parking recommandé : parking du port ou Parking Diamant. Rendez-vous au quai de nave-va.fr pour la croisière.",
+   website:"",address:"Port d'Ajaccio, 20000 Ajaccio",mapsUrl:"https://maps.google.com/?q=Port+Ajaccio"},
+
+  {uid:"d4_04",dayId:4,startHour:14,startMin:30,duration:120,title:"⭐ 🌅 Croisière Îles Sanguinaires",
+   category:"activity",needRes:true,isReserved:false,isDone:false,budget:100,
+   info:"INCONTOURNABLE — Bateau depuis le port d'Ajaccio vers l'archipel des Sanguinaires. Vue spectaculaire sur le golfe, dauphins possibles ! ~2h. Bébé accepté avec gilet (fourni). À RÉSERVER ABSOLUMENT sur nave-va.fr — 06 71 66 66 23.",
+   website:"https://www.nave-va.fr",address:"Port d'Ajaccio, 20000 Ajaccio",mapsUrl:"https://maps.google.com/?q=Port+Ajaccio"},
+
+  {uid:"d4_05",dayId:4,startHour:16,startMin:30,duration:60,title:"🚗 Retour → Serra di Ferro (1h)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Partez avant 17h30 pour rentrer avant la nuit. ~1h de route.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d4_06",dayId:4,startHour:20,startMin:0,duration:90,title:"🍽️ Dîner maison",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:30,
+   info:"Dîner à la maison après cette belle journée ajaccienne. Racontez les Sanguinaires !",
+   website:"",address:"",mapsUrl:""},
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 5 — Jeu 11/06 — RONDINARA + BONIFACIO
+  // ══════════════════════════════════════════════════════
+  {uid:"d5_00",dayId:5,startHour:8,startMin:0,duration:90,title:"🚗 Départ 8h → Rondinara (1h30)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Partir à 8h pour arriver à Rondinara vers 9h30. Route via T40 direction Bonifacio. Parking payant à Rondinara — arriver tôt pour avoir une place.",
+   website:"",address:"Rondinara, Corse du Sud",mapsUrl:""},
+
+  {uid:"d5_01",dayId:5,startHour:9,startMin:30,duration:180,title:"⭐ 🏖️ Plage de Rondinara",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:10,
+   info:"Souvent citée parmi les plus belles plages d'Europe ! Baie presque fermée, eau d'un calme absolu, sable blanc extra-fin. Idéale bébé (zéro vague). Snorkeling aux extrémités rocheuses. Paillote + location de matelas.",
+   website:"",address:"Plage de Rondinara, Corse du Sud",mapsUrl:"https://maps.google.com/?q=Plage+Rondinara+Corse"},
+
+  {uid:"d5_02",dayId:5,startHour:12,startMin:30,duration:30,title:"🚗 Rondinara → Bonifacio (25 min)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"25 min de route. Parking de la marine ou port de plaisance (payant). Parking proportionnel à la distance du centre — plus loin = moins cher.",
+   website:"",address:"Bonifacio, 20169 Corse du Sud",mapsUrl:""},
+
+  {uid:"d5_03",dayId:5,startHour:13,startMin:0,duration:75,title:"🍽️ Déjeuner à Bonifacio",
+   category:"meal",needRes:true,isReserved:false,isDone:false,budget:110,
+   info:"Port touristique (~25€/pers). Recommandés : Cantina Doria (haute ville, plus authentique et moins cher), Stella d'Oro (valeur sûre, port). À RÉSERVER pour 5 !",
+   website:"",address:"Bonifacio, port de plaisance",mapsUrl:""},
+
+  {uid:"d5_04",dayId:5,startHour:14,startMin:15,duration:90,title:"👶 Sieste bébé (poussette marine)",
+   category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Balade en poussette le long de la marine (plat, ombragé) — bébé s'endort facilement. Les adultes explorent les boutiques et terrasses du port.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d5_05",dayId:5,startHour:15,startMin:45,duration:90,title:"⭐ 🏰 Haute Ville & Citadelle de Bonifacio",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:15,
+   info:"INCONTOURNABLE — Vieille ville médiévale sur des falaises blanches à 70m de hauteur. Vue sur mer et Sardaigne. ⚠️ PORTE-BÉBÉ OBLIGATOIRE (pavés, poussette impossible). ~5€ entrée citadelle.",
+   website:"",address:"Citadelle de Bonifacio, 20169 Bonifacio",mapsUrl:"https://maps.google.com/?q=Citadelle+Bonifacio+Corse"},
+
+  {uid:"d5_06",dayId:5,startHour:17,startMin:30,duration:90,title:"🚗 Retour → Serra di Ferro (1h30)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"~1h30 de route. Arrivée vers 19h. Longue journée — dîner simple à la maison.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d5_07",dayId:5,startHour:20,startMin:0,duration:90,title:"🍽️ Dîner maison — bilan Bonifacio",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:35,
+   info:"Après cette belle journée, dîner convivial à la maison. Partagez les photos de Bonifacio !",
+   website:"",address:"",mapsUrl:""},
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 6 — Ven 12/06 — MARCHÉ + PLAGE + U SAN PETRU
+  // ══════════════════════════════════════════════════════
+  {uid:"d6_01",dayId:6,startHour:9,startMin:0,duration:90,title:"🛒 Marché paysan de Serra-di-Ferro (5 min à pied !)",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:60,
+   info:"LE marché local, à 5 min À PIED ! Place de la Poste, 9h-13h. Fromages, confitures, huiles d'olive, charcuterie, légumes frais. Idéal pour les achats à ramener + emplettes de fin de séjour.",
+   website:"",address:"Place de la Poste, 20140 Serra-di-Ferro",mapsUrl:"https://maps.google.com/?q=Serra+di+Ferro+Place+de+la+Poste"},
+
+  {uid:"d6_02",dayId:6,startHour:10,startMin:30,duration:30,title:"🚗 Route → plage choisie",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Après le marché, départ vers la plage. Options selon l'envie : Campomoro (45 min, Natura 2000, très belle — à faire avant de partir !) · Scodi Neri (15 min, crique secrète confidentielle) · Abbartello (11 min, petite et calme) · Porto-Pollo (8 min, facile avec les courses du marché).",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d6_02b",dayId:6,startHour:11,startMin:0,duration:90,title:"⭐ 🏖️ Campomoro (recommandée) ou plage locale",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"RECOMMANDÉE : Campomoro — baie Natura 2000, sable blanc, eau turquoise, très calme. Vous n'y êtes pas encore allés ! Snorkeling excellent côté rochers de la tour génoise. Ou Scodi Neri (15 min, sable blanc surprenant, ultra-confidentielle) · Abbartello (11 min, petite crique sympa).",
+   website:"",address:"Campomoro, Belvédère-Campomoro",mapsUrl:"https://maps.google.com/?q=Plage+Campomoro+Corse"},
+
+  {uid:"d6_03",dayId:6,startHour:12,startMin:30,duration:75,title:"🍽️ Déjeuner sur place ou maison",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:50,
+   info:"Si Campomoro : U Campanile sur la plage (cuisine corse, terrasse vue mer). Sinon retour maison pour déjeuner avec les produits du marché du matin.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d6_04",dayId:6,startHour:14,startMin:0,duration:90,title:"👶 Sieste bébé",
+   category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Sieste à la maison. Profitez-en pour préparer les bagages tranquillement — départ demain matin à 7h30 !",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d6_05",dayId:6,startHour:15,startMin:30,duration:90,title:"🌊 Balade coucher de soleil Porto-Pollo",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Dernière balade du séjour. Porto-Pollo est magique au coucher de soleil — golfe du Valinco teinté d'or. Apéro en terrasse ou sur la plage.",
+   website:"",address:"Porto-Pollo, Serra-di-Ferro",mapsUrl:""},
+
+  {uid:"d6_06",dayId:6,startHour:20,startMin:30,duration:105,title:"⭐ 🎸 Dîner U San Petru — polyphonie corse !",
+   category:"meal",needRes:true,isReserved:false,isDone:false,budget:110,
+   info:"DÎNER D'ADIEU PARFAIT — Restaurant traditionnel corse du village, belle terrasse sous les arbres. Soirées guitare corse et polyphonie TOUS LES VENDREDIS de juin à septembre ! Votre dernier vendredi soir en Corse. RÉSERVER : 04 95 26 45 32.",
+   website:"",address:"U San Petru, Serra-di-Ferro",mapsUrl:"https://maps.google.com/?q=U+San+Petru+Serra+di+Ferro"},
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 7 — Sam 13/06 — DERNIÈRE JOURNÉE COMPLÈTE
+  // ══════════════════════════════════════════════════════
+  {uid:"d7_01",dayId:7,startHour:9,startMin:0,duration:210,title:"🏖️ Plage favorite ou Capu Laurosu",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Option A — Plage favorite : vote du groupe (Cupabia ? Porto-Pollo ? Taravo ?). Option B — Capu Laurosu (20 min) : immense plage sauvage de 3.5 km que vous n'avez pas encore faite ! Sable doré, jamais bondée, idéale bébé. Option C — Campomoro (45 min) si pas fait vendredi. C'est la dernière baignade corse !",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d7_02",dayId:7,startHour:12,startMin:30,duration:90,title:"🍽️ Déjeuner — restaurants ou paillote",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:60,
+   info:"Déjeuner selon votre plage du matin. Profitez des terrasses de Propriano ou d'une paillote locale.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d7_03",dayId:7,startHour:14,startMin:0,duration:90,title:"👶 Sieste bébé",
+   category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Dernière sieste corse. Profitez-en pour finir les bagages. Départ DEMAIN 7h30 — tout doit être prêt ce soir !",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d7_04",dayId:7,startHour:15,startMin:30,duration:90,title:"🛒 Emplettes finales + Filitosa (optionnel)",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:60,
+   info:"Emplettes finales : Stella Inzuccarata (biscuits corses, 7 min), boucherie Porto-Pollo (charcuterie maison), boutiques Propriano. Option : Filitosa (20 min, 15h30-17h, ~9€/adulte) si vous n'avez pas encore fait de culture. Réserver : filitosa.fr.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d7_05",dayId:7,startHour:17,startMin:30,duration:60,title:"🧳 Bagages + nettoyage maison",
+   category:"rest",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"⚠️ DÉPART 7h30 DEMAIN ! Finissez les bagages, videz frigo, nettoyez maison (grille de ménage = check cuisine + linge dans entrée + poubelles). Vérifiez : billets ferry, pièces d'identité.",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d7_06",dayId:7,startHour:19,startMin:0,duration:60,title:"🌅 Dernier coucher de soleil — Porto-Pollo",
+   category:"activity",needRes:false,isReserved:false,isDone:false,budget:15,
+   info:"5 min de la maison. Vue sur le golfe teinté d'orange — magique. Apéro sur la plage ou terrasse d'un bar. Le moment parfait pour clôturer le voyage.",
+   website:"",address:"Porto-Pollo, Serra-di-Ferro",mapsUrl:""},
+
+  {uid:"d7_07",dayId:7,startHour:20,startMin:30,duration:90,title:"🌟 Dîner final — maison ou U San Matteu",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:30,
+   info:"Finissez les restes corses en apéro dînatoire — ou U San Matteu pizzeria à 5 min à pied (04 95 74 07 81, réserver si besoin). Bonne musique, étoiles corses, souvenirs inoubliables !",
+   website:"",address:"",mapsUrl:""},
+
+  // ══════════════════════════════════════════════════════
+  // JOUR 8 — Dim 14/06 — DÉPART
+  // ══════════════════════════════════════════════════════
+  {uid:"d8_01",dayId:8,startHour:6,startMin:45,duration:45,title:"☕ Réveil 6h45 — dernier café corse",
+   category:"meal",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Dernier café. Chargez la voiture. Ne rien oublier derrière. Check-out avant 10h (mais vous partez à 7h30).",
+   website:"",address:"",mapsUrl:""},
+
+  {uid:"d8_02",dayId:8,startHour:7,startMin:30,duration:60,title:"🚗 Départ 7h30 MAX → Ajaccio (1h)",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"⚠️ IMPÉRATIF — Partir à 7h30 maximum. Ferry à 9h00 — il faut être au terminal à 8h00 minimum (1h avant avec voiture).",
+   website:"",address:"Arghja Di U Farru 12, 20140 Serra di Ferro",mapsUrl:""},
+
+  {uid:"d8_03",dayId:8,startHour:8,startMin:30,duration:30,title:"🚢 Enregistrement terminal Corsica Ferries",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Port d'Ajaccio, terminal Corsica Ferries. File voitures. Billets + pièces d'identité accessibles.",
+   website:"",address:"Port d'Ajaccio, 20000 Ajaccio",mapsUrl:"https://maps.google.com/?q=Port+Ajaccio+terminal"},
+
+  {uid:"d8_04",dayId:8,startHour:9,startMin:0,duration:30,title:"🛥️ Embarquement 9h00 — À l'année prochaine !",
+   category:"transport",needRes:false,isReserved:false,isDone:false,budget:0,
+   info:"Direction Toulon, ~7-10h de traversée. On revient en Corse l'année prochaine 🌊",
+   website:"",address:"Port d'Ajaccio, 20000 Ajaccio",mapsUrl:""}
+];
+
+
+/* ENGINE */
+var SH=7,EH=23,HPX=55,SNAP=15,KEY=STORAGE_KEY,LONG_PRESS_MS=600,CANCEL_MOVE_PX=12;
+function dayEmoji(em){return EMOJI_MAP[em]||em;}
+function dayLabel(id){for(var i=0;i<DAY_DATA.length;i++){if(DAY_DATA[i][0]===id)return DAY_DATA[i][3]||"";}return "";}
+var CAT_COLOR_MAP={activity:"var(--blue)",transport:"var(--orange)",meal:"var(--green)",rest:"var(--purple)",optional:"var(--brown)"};
+var CAT_BG_MAP={activity:"var(--blue-bg)",transport:"var(--orange-bg)",meal:"var(--green-bg)",rest:"var(--purple-bg)",optional:"var(--brown-bg)"};
+var CAT_NAME_MAP={activity:"Activité",transport:"Transport",meal:"Repas",rest:"Repos",optional:"Alternative"};
+function loadState(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.acts))return o;}}catch(e){}return{acts:cloneActs(),notes:""};}
+function cloneActs(){return JSON.parse(JSON.stringify(ACTS_DEFAULT));}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}refreshTotalCost();}
+var ST=loadState(),activeDayId=DAY_DATA.length>0?DAY_DATA[0][0]:0,editingUid=null;
+function p2(n){return(n<10?"0":"")+n;}function fmt(h,m){return p2(h)+"h"+p2(m);}
+function calcEnd(a){var t=a.startHour*60+a.startMin+a.duration;return{h:Math.floor(t/60),m:t%60};}
+function blockTop(a){return((a.startHour-SH)+a.startMin/60)*HPX;}function blockH(a){return Math.max((a.duration/60)*HPX,22);}
+function newUid(){return"x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function G(id){return document.getElementById(id);}
+function esc(s){return(""+s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function findAct(uid){for(var i=0;i<ST.acts.length;i++){if(ST.acts[i].uid===uid)return ST.acts[i];}return null;}
+function showToast(msg,ms){var t=G("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");},ms||2500);}
+function init(){
+  document.title=TRIP_TITLE;G("hdr-logo").textContent=TRIP_LOGO;G("hdr-title").textContent=TRIP_TITLE;G("hdr-sub-text").textContent=TRIP_SUBTITLE;
+  buildTabs();buildDayColumns();refreshAll();
+  G("notes-ta").value=ST.notes||"";
+  G("notes-ta").addEventListener("input",function(e){ST.notes=e.target.value;persist();});
+  G("fab").addEventListener("click",function(){openAddModal(null);});
+  G("save-btn").addEventListener("click",commitActivity);
+  G("det-close").addEventListener("click",function(){closeModal("mod-detail");});
+  G("edit-close").addEventListener("click",function(){closeModal("mod-edit");});
+  G("edit-cancel").addEventListener("click",function(){closeModal("mod-edit");});
+  G("settings-close").addEventListener("click",function(){closeModal("mod-settings");});
+  G("settings-cancel").addEventListener("click",function(){closeModal("mod-settings");});
+  G("reset-btn").addEventListener("click",doReset);
+  G("btn-settings").addEventListener("click",function(){openModal("mod-settings");});
+  G("btn-share").addEventListener("click",openShareModal);
+  G("share-close").addEventListener("click",function(){closeModal("mod-share");});
+  G("share-cancel").addEventListener("click",function(){closeModal("mod-share");});
+  G("comp-hdr").addEventListener("click",function(){toggleSection("comp-body","comp-arr");});
+  G("notes-hdr").addEventListener("click",function(){toggleSection("notes-body","notes-arr");});
+  ["mod-detail","mod-edit","mod-settings","mod-share"].forEach(function(id){G(id).addEventListener("click",function(e){if(e.target===this)closeModal(id);});});
+  G("stab-export").addEventListener("click",function(){setShareTab("export");});
+  G("stab-import").addEventListener("click",function(){setShareTab("import");});
+  G("copy-code-btn").addEventListener("click",copyShareCode);
+  G("import-btn").addEventListener("click",doImport);
+  populateDaySelect();if(DAY_DATA.length>0)setDay(DAY_DATA[0][0]);refreshTotalCost();
+}
+function encodeState(){return SHARE_PREFIX+btoa(unescape(encodeURIComponent(JSON.stringify(ST))));}
+function decodeState(code){code=code.trim();if(code.indexOf(SHARE_PREFIX)!==0)return null;try{var o=JSON.parse(decodeURIComponent(escape(atob(code.slice(SHARE_PREFIX.length)))));if(o&&Array.isArray(o.acts))return o;}catch(e){}return null;}
+function openShareModal(){G("export-code").textContent=encodeState();G("import-ta").value="";setShareTab("export");openModal("mod-share");}
+function setShareTab(w){G("stab-export").classList.toggle("on",w==="export");G("stab-import").classList.toggle("on",w==="import");G("sec-export").classList.toggle("on",w==="export");G("sec-import").classList.toggle("on",w==="import");}
+function copyShareCode(){var c=G("export-code").textContent;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c).then(function(){showToast("✅ Code copié !");}).catch(function(){fallbackCopy(c);});}else{fallbackCopy(c);}}
+function fallbackCopy(t){var ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;top:-9999px";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");showToast("✅ Code copié !");}catch(e){showToast("❌ Copie échouée");}document.body.removeChild(ta);}
+function doImport(){var c=G("import-ta").value,ns=decodeState(c);if(!ns){showToast("❌ Code invalide");return;}if(!confirm("Remplacer votre itinéraire actuel ?\nVotre version actuelle sera perdue."))return;ST=ns;persist();G("notes-ta").value=ST.notes||"";refreshAll();closeModal("mod-share");showToast("✅ Importé !");}
+function buildTabs(){var html="";for(var i=0;i<DAY_DATA.length;i++){var d=DAY_DATA[i];html+='<div class="tab" id="tab-'+d[0]+'" data-did="'+d[0]+'"><span class="tab-e">'+dayEmoji(DAY_EM[i])+'</span><span class="tab-d">'+esc(d[1])+'</span><span class="tab-n">'+esc(d[2].slice(0,8))+'</span></div>';}G("tabs").innerHTML=html;var tabs=G("tabs").querySelectorAll(".tab");for(var j=0;j<tabs.length;j++){(function(tab){tab.addEventListener("click",function(){setDay(parseInt(tab.dataset.did));});})(tabs[j]);}}
+function buildDayColumns(){var html="";for(var i=0;i<DAY_DATA.length;i++){var d=DAY_DATA[i];html+='<div class="day" id="day-'+d[0]+'"><div class="day-hdr"><h2>'+dayEmoji(DAY_EM[i])+' '+esc(d[2])+' · '+esc(d[1])+' — '+esc(dayLabel(d[0]))+'</h2><span id="dcost-'+d[0]+'"></span></div><div class="grid" id="grid-'+d[0]+'">'+buildHours()+'<div class="drop-line" id="dline-'+d[0]+'"><span class="drop-label" id="dlbl-'+d[0]+'"></span></div></div></div>';}G("days-wrap").innerHTML=html;}
+function buildHours(){var html="";for(var h=SH;h<EH;h++){var top=(h-SH)*HPX;html+='<div class="hl" style="top:'+top+'px"></div><div class="hlb" style="top:'+top+'px">'+p2(h)+'h</div>';}return html;}
+function refreshAll(){for(var i=0;i<DAY_DATA.length;i++)refreshDay(DAY_DATA[i][0]);refreshCompleted();}
+function refreshDay(dayId){var grid=G("grid-"+dayId);if(!grid)return;var old=grid.querySelectorAll(".blk,.empty-day");for(var k=0;k<old.length;k++)old[k].parentNode.removeChild(old[k]);var acts=[];for(var i=0;i<ST.acts.length;i++){if(ST.acts[i].dayId===dayId&&!ST.acts[i].isDone)acts.push(ST.acts[i]);}if(acts.length===0){var emp=document.createElement("div");emp.className="empty-day";emp.innerHTML='<span class="ei">📅</span><p>Aucune activité</p><small>Appuyez sur + pour ajouter</small>';grid.appendChild(emp);}else{for(var j=0;j<acts.length;j++)grid.appendChild(makeBlock(acts[j]));}var total=0;for(var m=0;m<acts.length;m++)total+=(acts[m].budget||0);var cp=G("dcost-"+dayId);if(cp)cp.innerHTML=total>0?'<span class="cost-pill">~'+total+'€</span>':"";}
+function makeBlock(act){var div=document.createElement("div");div.className="blk cat-"+act.category;div.id="blk-"+act.uid;div.setAttribute("data-uid",act.uid);div.style.top=blockTop(act)+"px";div.style.height=blockH(act)+"px";var en=calcEnd(act),hp=blockH(act),badge="";if(hp>36&&act.needRes){badge=act.isReserved?'<div class="blk-badge badge-ok">✓ Réservé</div>':'<div class="blk-badge badge-warn">⚠ À réserver</div>';}div.innerHTML='<div class="blk-name">'+esc(act.title)+'</div>'+(hp>30?'<div class="blk-time">'+fmt(act.startHour,act.startMin)+' – '+fmt(en.h,en.m)+'</div>':'')+badge;wireBlock(div,act.uid);return div;}
+function wireBlock(div,uid){var timer=null,ox=0,oy=0,cancelled=false;div.addEventListener("pointerdown",function(ev){if(ev.target.tagName==="INPUT")return;ox=ev.clientX;oy=ev.clientY;cancelled=false;timer=setTimeout(function(){timer=null;if(cancelled)return;ev.preventDefault();div.classList.remove("pressing");if(navigator.vibrate)navigator.vibrate(30);showDragToast();beginDrag(ev,uid);},LONG_PRESS_MS);var pt=setTimeout(function(){if(!cancelled)div.classList.add("pressing");},150);function onMove(e2){var dx=Math.abs(e2.clientX-ox),dy=Math.abs(e2.clientY-oy);if(dx>CANCEL_MOVE_PX||dy>CANCEL_MOVE_PX){cancelled=true;clearTimeout(timer);clearTimeout(pt);timer=null;div.classList.remove("pressing");document.removeEventListener("pointermove",onMove);}}function onUp(){div.classList.remove("pressing");clearTimeout(pt);document.removeEventListener("pointermove",onMove);if(timer){clearTimeout(timer);timer=null;if(!cancelled)showDetail(uid);}}document.addEventListener("pointermove",onMove,{passive:true});document.addEventListener("pointerup",onUp,{once:true});});}
+function showDragToast(){var dt=G("drag-toast");dt.classList.add("show");clearTimeout(dt._t);dt._t=setTimeout(function(){dt.classList.remove("show");},3000);}
+function hideDragToast(){G("drag-toast").classList.remove("show");}
+var DRG=null;
+function beginDrag(ev,uid){var act=findAct(uid);if(!act)return;var blkEl=G("blk-"+uid);if(!blkEl)return;blkEl.classList.add("dragging");document.body.style.overflow="hidden";document.body.style.touchAction="none";var ghost=G("ghost");ghost.style.display="block";ghost.style.background=CAT_BG_MAP[act.category]||"#444";ghost.style.borderColor=CAT_COLOR_MAP[act.category]||"#999";ghost.style.left=ev.clientX+"px";ghost.style.top=ev.clientY+"px";ghost.textContent=act.title;DRG={uid:uid,blkEl:blkEl,dropH:null,dropM:null};document.addEventListener("pointermove",onDragMove,{passive:false});document.addEventListener("pointerup",onDragUp,{once:true});}
+function onDragMove(ev){if(!DRG)return;ev.preventDefault();G("ghost").style.left=ev.clientX+"px";G("ghost").style.top=ev.clientY+"px";var zone=G("comp-zone"),zr=zone.getBoundingClientRect(),inZone=ev.clientY>=zr.top&&ev.clientY<=zr.bottom&&ev.clientX>=zr.left&&ev.clientX<=zr.right;zone.classList.toggle("over",inZone);if(inZone){hideDropLine();DRG.dropH=null;return;}var grid=G("grid-"+activeDayId);if(!grid){hideDropLine();return;}var gr=grid.getBoundingClientRect(),gy=ev.clientY-gr.top;if(gy>=0&&gy<=gr.height){var tm=(gy/HPX)*60,h=Math.floor(tm/60)+SH,m=Math.round((tm%60)/SNAP)*SNAP;if(m>=60){h++;m=0;}h=Math.max(SH,Math.min(EH-1,h));showDropLine(activeDayId,h,m);DRG.dropH=h;DRG.dropM=m;}else{hideDropLine();DRG.dropH=null;}}
+function onDragUp(ev){if(!DRG)return;document.body.style.overflow="";document.body.style.touchAction="";hideDragToast();G("ghost").style.display="none";DRG.blkEl.classList.remove("dragging");G("comp-zone").classList.remove("over");hideDropLine();var zone=G("comp-zone"),zr=zone.getBoundingClientRect();if(ev.clientY>=zr.top&&ev.clientY<=zr.bottom){setDone(DRG.uid);}else if(DRG.dropH!==null){var act=findAct(DRG.uid);if(act){act.startHour=DRG.dropH;act.startMin=DRG.dropM;persist();refreshDay(act.dayId);}}document.removeEventListener("pointermove",onDragMove);DRG=null;}
+function showDropLine(dayId,h,m){var ln=G("dline-"+dayId),lb=G("dlbl-"+dayId);if(!ln)return;ln.style.top=((h-SH)+m/60)*HPX+"px";ln.style.display="block";if(lb)lb.textContent=fmt(h,m);}
+function hideDropLine(){for(var i=0;i<DAY_DATA.length;i++){var ln=G("dline-"+DAY_DATA[i][0]);if(ln)ln.style.display="none";}}
+function setDone(uid){var act=findAct(uid);if(!act)return;act.isDone=true;persist();refreshDay(act.dayId);refreshCompleted();}
+function restoreAct(uid){var act=findAct(uid);if(!act)return;act.isDone=false;persist();refreshDay(act.dayId);refreshCompleted();}
+function refreshCompleted(){var zone=G("comp-zone"),done=ST.acts.filter(function(a){return a.isDone;});if(done.length===0){zone.innerHTML='<div class="comp-empty">Glissez les activités terminées ici ↑</div>';return;}var html="";for(var i=0;i<done.length;i++){var em="⭐";for(var k=0;k<DAY_DATA.length;k++){if(DAY_DATA[k][0]===done[i].dayId){em=dayEmoji(DAY_EM[k]||"star");break;}}html+='<div class="comp-row"><span class="comp-name">'+em+' '+esc(done[i].title)+'</span><button class="comp-btn" data-ruid="'+done[i].uid+'">Restaurer</button></div>';}zone.innerHTML=html;var btns=zone.querySelectorAll(".comp-btn");for(var j=0;j<btns.length;j++){(function(btn){btn.addEventListener("click",function(){restoreAct(btn.dataset.ruid);});})(btns[j]);}}
+function showDetail(uid){var act=findAct(uid);if(!act)return;G("det-title").textContent=act.title;var en=calcEnd(act);var html='<span class="cat-badge" style="background:'+CAT_BG_MAP[act.category]+';color:'+CAT_COLOR_MAP[act.category]+'">'+CAT_NAME_MAP[act.category]+'</span>';if(act.needRes){html+='<div class="res-row'+(act.isReserved?' done':'')+'" id="rrow-'+uid+'"><input type="checkbox" id="rcb-'+uid+'"'+(act.isReserved?' checked':'')+'><label for="rcb-'+uid+'">'+(act.isReserved?'✓ Réservé !':'⚠️ À réserver — important !')+'</label></div>';}html+='<div class="drow"><span class="drow-icon">🕐</span><span class="drow-text"><strong>'+fmt(act.startHour,act.startMin)+' – '+fmt(en.h,en.m)+'</strong> · '+act.duration+' min</span></div>';if(act.budget>0)html+='<div class="drow"><span class="drow-icon">💰</span><span class="drow-text">~'+act.budget+'€ estimé</span></div>';if(act.info)html+='<div class="drow"><span class="drow-icon">📋</span><span class="drow-text">'+esc(act.info).replace(/\n/g,"<br>")+'</span></div>';if(act.website){var domain=esc(act.website.replace(/https?:\/\//,"").split("/")[0]);html+='<div class="drow"><span class="drow-icon">🌐</span><a class="drow-text drow-link" href="'+esc(act.website)+'" target="_blank">'+domain+' ↗</a></div>';}if(act.address){html+='<div class="drow"><span class="drow-icon">📍</span><span class="drow-text">'+esc(act.address);if(act.mapsUrl)html+='<br><a class="drow-link" href="'+esc(act.mapsUrl)+'" target="_blank">Voir sur Maps ↗</a>';html+='</span></div>';}html+='<button class="btn btn-blue" id="det-edit-btn" style="margin-top:14px">Modifier</button><button class="btn btn-green" id="det-done-btn">Marquer comme terminée</button><button class="btn btn-red" id="det-del-btn">Supprimer</button>';G("det-body").innerHTML=html;if(act.needRes){G("rcb-"+uid).addEventListener("change",function(ev){act.isReserved=ev.target.checked;persist();refreshDay(act.dayId);var row=G("rrow-"+uid),lbl=row?row.querySelector("label"):null;if(row)row.classList.toggle("done",act.isReserved);if(lbl)lbl.textContent=act.isReserved?'✓ Réservé !':'⚠️ À réserver — important !';});}G("det-edit-btn").addEventListener("click",function(){openEditModal(uid);});G("det-done-btn").addEventListener("click",function(){setDone(uid);closeModal("mod-detail");});G("det-del-btn").addEventListener("click",function(){deleteAct(uid);});openModal("mod-detail");}
+function populateDaySelect(){var html="";for(var i=0;i<DAY_DATA.length;i++){var d=DAY_DATA[i];html+='<option value="'+d[0]+'">'+dayEmoji(DAY_EM[i])+' '+esc(d[2])+' '+esc(d[1])+'</option>';}G("f-day").innerHTML=html;}
+function openAddModal(preDay){editingUid=null;G("edit-title").textContent="Nouvelle activité";G("f-name").value="";G("f-notes").value="";G("f-web").value="";G("f-addr").value="";G("f-map").value="";G("f-cost").value="";G("f-dur").value="60";G("f-start").value="10:00";G("f-cat").value="activity";G("f-res").checked=false;G("f-day").value=(preDay!==null&&preDay!==undefined)?preDay:activeDayId;closeModal("mod-detail");openModal("mod-edit");}
+function openEditModal(uid){var act=findAct(uid);if(!act)return;editingUid=uid;G("edit-title").textContent="Modifier activité";G("f-name").value=act.title;G("f-day").value=act.dayId;G("f-cat").value=act.category;G("f-start").value=p2(act.startHour)+":"+p2(act.startMin);G("f-dur").value=act.duration;G("f-notes").value=act.info;G("f-web").value=act.website;G("f-addr").value=act.address;G("f-map").value=act.mapsUrl;G("f-cost").value=act.budget;G("f-res").checked=act.needRes;closeModal("mod-detail");openModal("mod-edit");}
+function commitActivity(){var name=G("f-name").value.trim();if(!name){G("f-name").focus();return;}var parts=G("f-start").value.split(":"),sh=parseInt(parts[0])||0,sm=parseInt(parts[1])||0,dur=parseInt(G("f-dur").value)||60;if(editingUid){var act=findAct(editingUid);if(act){var prev=act.dayId;act.title=name;act.dayId=parseInt(G("f-day").value);act.category=G("f-cat").value;act.startHour=sh;act.startMin=sm;act.duration=dur;act.info=G("f-notes").value;act.website=G("f-web").value;act.address=G("f-addr").value;act.mapsUrl=G("f-map").value;act.budget=parseFloat(G("f-cost").value)||0;act.needRes=G("f-res").checked;persist();refreshDay(prev);if(act.dayId!==prev)refreshDay(act.dayId);}}else{var na={uid:newUid(),title:name,dayId:parseInt(G("f-day").value),category:G("f-cat").value,startHour:sh,startMin:sm,duration:dur,info:G("f-notes").value,website:G("f-web").value,address:G("f-addr").value,mapsUrl:G("f-map").value,budget:parseFloat(G("f-cost").value)||0,needRes:G("f-res").checked,isReserved:false,isDone:false};ST.acts.push(na);persist();refreshDay(na.dayId);}closeModal("mod-edit");}
+function deleteAct(uid){if(!confirm("Supprimer cette activité ?"))return;var act=findAct(uid);if(!act)return;var d=act.dayId;ST.acts=ST.acts.filter(function(a){return a.uid!==uid;});persist();refreshDay(d);closeModal("mod-detail");}
+function setDay(id){var tabs=G("tabs").querySelectorAll(".tab");for(var i=0;i<tabs.length;i++)tabs[i].classList.remove("on");var days=document.querySelectorAll(".day");for(var j=0;j<days.length;j++)days[j].classList.remove("on");var tab=G("tab-"+id);if(tab){tab.classList.add("on");tab.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});}var day=G("day-"+id);if(day)day.classList.add("on");activeDayId=id;}
+function toggleSection(bodyId,arrId){var body=G(bodyId),arr=G(arrId);body.classList.toggle("hide");arr.classList.toggle("shut",body.classList.contains("hide"));}
+function openModal(id){G(id).classList.add("open");}function closeModal(id){G(id).classList.remove("open");}
+function refreshTotalCost(){var total=0;for(var i=0;i<ST.acts.length;i++){if(!ST.acts[i].isDone)total+=ST.acts[i].budget||0;}var el=G("total-cost");if(el)el.textContent="~"+total+"€ budget activités";}
+function doReset(){if(!confirm("Réinitialiser tout l'itinéraire ?\nToutes vos modifications seront perdues."))return;localStorage.removeItem(KEY);location.reload();}
+init();
+})();
+</script>
+</body>
+</html>
